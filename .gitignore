@@ -4,3 +4,6 @@ Portfolio/Spiders/__pycache__/
 Portfolio/__pycache__/
 /StockApplications/Portfolio/PortfolioData/
 /StockApplications/Portfolio/Portfolios/
+../.idea/
+Portfolio/__pycache__/portfolio.cpython-36.pyc
+Portfolio/portfolio.py
