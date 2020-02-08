@@ -22,5 +22,5 @@ class Calculate:
         amount_to_buy = np.rint(np.divide(prices_to_buy, self.price_data))
         total_price = np.sum(amount_to_buy * self.price_data)
         prices_to_buy = np.round(prices_to_buy, decimals=2)
-        amount_to_buy = np.round(amount_to_buy, decimals=0)
-        return total_price, amount_to_buy.tolist(), prices_to_buy.tolist()
+        self.index_weights = np.round(np.multiply(self.index_weights, 100), decimals=2)
+        return total_price, amount_to_buy.tolist(), prices_to_buy.tolist(), self.index_weights

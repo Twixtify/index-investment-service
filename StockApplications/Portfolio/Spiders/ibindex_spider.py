@@ -44,6 +44,7 @@ class IBIndexSpider(threading.Thread):
                 weights.append(tag.text.strip())
         if not weights:
             print(self.__class__, ": No values found on %s" % self.url)
+            exit(1)
         return list(zip(weights[0::2], weights[1::2]))
 
     def run(self):

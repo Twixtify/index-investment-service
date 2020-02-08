@@ -57,6 +57,25 @@ class CSVFile:
                 rows.append(row)
         return rows
 
+    def read_and_exclude_rows(self, exclude_items):
+        rows_excluded = []
+        rows_included = []
+        for i, item in enumerate(exclude_items):
+            if isinstance(item, str):
+                exclude_items[i] = item.lower()
+        with open(self.file_path, 'r', newline='\n', encoding=ENCODING) as file:
+            reader = csv.reader(file)
+            for index, row in enumerate(reader):
+                for row_item in row:
+                    if isinstance(row_item, str):
+                        row_item = row_item.lower()
+                    for item in exclude_items:
+                        if item in row_item:
+                            rows_excluded.append(row)
+                        else:
+                            rows_included.append(row)
+        return rows_included, rows_excluded
+
     def read_csv_column(self, col, header_in_file):
         column = []
         with codecs.open(self.file_path, 'r', encoding=ENCODING) as file:
