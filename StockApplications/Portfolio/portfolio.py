@@ -33,10 +33,15 @@ class Portfolio:
         calculator = Calculate(price_data, index_data)
         if stocks_to_exclude is not None:
             excluding = self.index_file.get_items_row_index(stocks_to_exclude)
+            _, rows_to_exclude = self.index_file.read_and_exclude_rows(stocks_to_exclude)
+            for i in sorted(excluding, reverse=True):
+                del index_data[i]
+            for row in rows_to_exclude:
+                print("Excluding: ", row)
         if using_index.lower() == Portfolio.ibindex:
-            total_price, amount_to_buy, prices_to_buy = calculator.calculate_ibindex_distribution(self.deposit,
-                                                                                                  excluding)
-            return total_price, amount_to_buy, prices_to_buy
+            results = calculator.calculate_ibindex_distribution(self.deposit, excluding)
+            total_price, amount_to_buy, prices_to_buy, index_weights = [*results]
+            return total_price, amount_to_buy, prices_to_buy, index_weights, index_data
 
     def gather_data(self, using_index):
         self.manage_threads.add_threads(self.create_avanza_spiders(self.urls, DATA_TO_SAVE, self.data_file))
@@ -58,9 +63,17 @@ class Portfolio:
         self.gather_data(using_index)
         self.sort_data()
         price_data, index_data = self.get_price_and_index()
-        total_price, n_stocks, price_stocks = self.calculate(using_index, price_data, index_data, stocks_to_exclude)
+        total_price, n_stocks, price_stocks, index_weights, index_data = self.calculate(using_index,
+                                                                                        price_data,
+                                                                                        index_data,
+                                                                                        stocks_to_exclude)
         stock_names = self.data_file.read_csv_column(DATA_TO_SAVE.index('Stock'), header_in_file=True)
-        result = zip(stock_names, price_stocks, n_stocks)
+        result = zip(["name", *stock_names],
+                     ["ibindex", *index_data],
+                     ["weights", *index_weights],
+                     ["price each", *price_data],
+                     ["total", *price_stocks],
+                     ["number", *n_stocks])
         result_file = CSVFile('result.csv', self.data_file.folder_path)
         result_file.write_rows(result)
         result_file.pprint_self()
@@ -74,7 +87,11 @@ class Portfolio:
     @classmethod
     def get_numeric_data(cls, csv_file, col_index, header_in_file):
         column_list = csv_file.read_csv_column(col_index, header_in_file)
-        text_parser = TextParser(column_list)
+        return cls.parse_comma_and_numeric(column_list)
+
+    @classmethod
+    def parse_comma_and_numeric(cls, string_list):
+        text_parser = TextParser(string_list)
         text_parser.update(text_parser.replace_char_texts(",", "."))
         text_parser.update(text_parser.parse_numeric_texts())
         return list(map(float, text_parser.texts))
@@ -94,10 +111,10 @@ class Portfolio:
 if __name__ == "__main__":
     import os
     portfolios_file = 'investmentbolag'
-    p = Portfolio(deposit=0,
+    p = Portfolio(deposit=7500,
                   portfolio_name=portfolios_file,
                   stock_data_file_name=os.path.basename(FILE_PATH['csv'][portfolios_file]),
                   data_csv_folder_path=DIR_PATH['data'][portfolios_file],
                   index_file_name=os.path.basename(FILE_PATH['csv'][portfolios_file+'sindex']),
                   index_file_folder_path=DIR_PATH['data'][portfolios_file])
-    p.run(using_index="", stocks_to_exclude=None)
+    p.run(using_index="IBIndex", stocks_to_exclude=['hav', 'NAXS'])

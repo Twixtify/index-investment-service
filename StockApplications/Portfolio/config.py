@@ -10,16 +10,20 @@ DIR_PATH = {
     'spiders': PATH + "\\" + "Spiders",
     'data': {
         'base': PATH + "\\" + "PortfolioData",
-        'investmentbolag': PATH + "\\" + "PortfolioData" + "\\" + "InvestmentbolagData"
+        'investmentbolag': PATH + "\\" + "PortfolioData" + "\\" + "InvestmentbolagData",
+        'fornybarenergi': PATH + "\\" + "PortfolioData" + "\\" + "FörnybarEnergi"
     }
 }
 FILE_PATH = {
     'csv': {
         'investmentbolag': DIR_PATH['data']['investmentbolag'] + "\\" + "data.csv",
-        'investmentbolagsindex': DIR_PATH['data']['investmentbolag'] + "\\" + "index.csv"
+        'investmentbolagsindex': DIR_PATH['data']['investmentbolag'] + "\\" + "index.csv",
+        'fornybarenergi': DIR_PATH['data']['fornybarenergi'] + "\\" + "data.csv",
+        'fornybarenergiindex': DIR_PATH['data']['fornybarenergi'] + "\\" + "index.csv"
     },
     'urls': {
-        'investmentbolag': DIR_PATH['portfolios'] + "\\" + "investmentbolag"
+        'investmentbolag': DIR_PATH['portfolios'] + "\\" + "investmentbolag",
+        'fornybarenergi': DIR_PATH['portfolios'] + "\\" + "fornybarenergi"
     }
 }
 # dictionary with opening and closing times

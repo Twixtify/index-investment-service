@@ -37,7 +37,7 @@ class AvanzaSpider(threading.Thread):
                 subtag = tag.find_all("span", recursive=False)
                 if option in subtag[0].text:
                     values.append(subtag[1].text)
-        if not values:
+        if not len(values) >= 1:
             print(self.__class__, ": No values found on %s" % self.url)
         return values
 
