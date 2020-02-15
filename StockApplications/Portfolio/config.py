@@ -17,7 +17,7 @@ DIR_PATH = {
 FILE_PATH = {
     'csv': {
         'investmentbolag': DIR_PATH['data']['investmentbolag'] + "\\" + "data.csv",
-        'investmentbolagsindex': DIR_PATH['data']['investmentbolag'] + "\\" + "index.csv",
+        'investmentbolagindex': DIR_PATH['data']['investmentbolag'] + "\\" + "index.csv",
         'fornybarenergi': DIR_PATH['data']['fornybarenergi'] + "\\" + "data.csv",
         'fornybarenergiindex': DIR_PATH['data']['fornybarenergi'] + "\\" + "index.csv"
     },
