@@ -20,15 +20,13 @@ class Portfolio:
         self.urls = TextFile(self.portfolio_name, DIR_PATH['portfolios']).read_rows()
         self.data_file_name = os.path.basename(FILE_PATH['csv'][self.portfolio_name])
         self.data_folder = DIR_PATH['data'][self.portfolio_name]
-        self.index_file_name = os.path.basename(FILE_PATH['csv'][self.portfolio_name + 'index'])
-        self.index_folder = DIR_PATH['data'][self.portfolio_name]
         DataFolder(self.portfolio_name.title() + "Data").create_folder()
         self.manage_threads = ManageThreads()
 
     def calculate(self, *args):
         pass
 
-    def gather_data(self, using_index):
+    def gather_data(self, *args):
         pass
 
     def run(self, *args):

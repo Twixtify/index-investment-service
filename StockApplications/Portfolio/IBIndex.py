@@ -1,7 +1,9 @@
+import os
+
 from StockApplications.Portfolio.Methods.calculate import Calculate
 from StockApplications.Portfolio.Methods.csv_file import CSVFile
 from StockApplications.Portfolio.Spiders.ibindex_spider import IBIndexSpider
-from StockApplications.Portfolio.config import DATA_TO_SAVE
+from StockApplications.Portfolio.config import DATA_TO_SAVE, FILE_PATH, DIR_PATH
 from StockApplications.Portfolio.config import INDEX_VALUES
 from StockApplications.Portfolio.portfolio import Portfolio
 
@@ -13,6 +15,8 @@ class IBIndex(Portfolio):
         super().__init__(deposit, portfolio_name)
         self.data_file = super().create_csv(self.data_file_name, self.data_folder)
         self.data_file.write_row(DATA_TO_SAVE)
+        self.index_file_name = os.path.basename(FILE_PATH['csv'][self.portfolio_name + 'index'])
+        self.index_folder = DIR_PATH['data'][self.portfolio_name]
         self.index_file = super().create_csv(self.index_file_name, self.index_folder)
 
     def calculate(self, using_index, price_data, index_data, stocks_to_exclude=None):

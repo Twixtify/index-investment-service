@@ -11,7 +11,7 @@ DIR_PATH = {
     'data': {
         'base': PATH + "\\" + "PortfolioData",
         'investmentbolag': PATH + "\\" + "PortfolioData" + "\\" + "InvestmentbolagData",
-        'fornybarenergi': PATH + "\\" + "PortfolioData" + "\\" + "FörnybarEnergi"
+        'fornybarenergi': PATH + "\\" + "PortfolioData" + "\\" + "FornybarenergiData"
     }
 }
 FILE_PATH = {
@@ -19,7 +19,7 @@ FILE_PATH = {
         'investmentbolag': DIR_PATH['data']['investmentbolag'] + "\\" + "data.csv",
         'investmentbolagindex': DIR_PATH['data']['investmentbolag'] + "\\" + "index.csv",
         'fornybarenergi': DIR_PATH['data']['fornybarenergi'] + "\\" + "data.csv",
-        'fornybarenergiindex': DIR_PATH['data']['fornybarenergi'] + "\\" + "index.csv"
+        'fornybarenergiindex': DIR_PATH['portfolios'] + "\\" + "fornybarenergiindex.csv"
     },
     'urls': {
         'investmentbolag': DIR_PATH['portfolios'] + "\\" + "investmentbolag",
