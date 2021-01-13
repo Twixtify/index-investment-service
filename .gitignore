@@ -3,7 +3,7 @@
 /StockApplications/Portfolio/Spiders/__pycache__/
 /StockApplications/Portfolio/__pycache__/
 /StockApplications/Portfolio/PortfolioData/
-/StockApplications/Portfolio/Portfolios/
+/StockApplications/Portfolio/Portfolios/.gitkeep
 .idea/
 ../.idea/
 venv/
