@@ -52,5 +52,5 @@ class Fornybarenergi(Portfolio):
 
 
 if __name__ == "__main__":
-    p = Fornybarenergi(deposit=500, portfolio_name='fornybarenergi')
+    p = Fornybarenergi(deposit=2000, portfolio_name='fornybarenergi')
     p.run()
