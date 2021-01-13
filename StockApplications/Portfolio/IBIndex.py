@@ -76,5 +76,5 @@ class IBIndex(Portfolio):
 
 
 if __name__ == "__main__":
-    p = IBIndex(deposit=7500, portfolio_name='investmentbolag')
-    p.run(using_index="IBIndex", stocks_to_exclude=['hav', 'NAXS'])
+    p = IBIndex(deposit=10000, portfolio_name='investmentbolag')
+    p.run(using_index="IBIndex", stocks_to_exclude=['hav', 'NAXS', 'traction', 'öresund'])
