@@ -20,7 +20,7 @@ class IBIndexSpider(threading.Thread):
         self.index_soup = None
         self.driver = None
 
-    def init_driver(self, path_driver=r"E:\drivers\chromedriver.exe"):
+    def init_driver(self, path_driver=r"D:\drivers\chromedriver.exe"):
         options = Options()
         options.headless = True
         self.driver = webdriver.Chrome(executable_path=path_driver, chrome_options=options)
@@ -40,7 +40,7 @@ class IBIndexSpider(threading.Thread):
         weights = []
         tags = self.index_soup.find_all("td", attrs={"class": re.compile(r"text-small\s\b(hand|right)\b")})
         for tag in tags:
-            if len(tag.contents) is 1:
+            if len(tag.contents) == 1:
                 weights.append(tag.text.strip())
         if not weights:
             print(self.__class__, ": No values found on %s" % self.url)
