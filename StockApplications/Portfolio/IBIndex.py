@@ -9,6 +9,9 @@ from StockApplications.Portfolio.portfolio import Portfolio
 
 
 class IBIndex(Portfolio):
+    """
+    TODO: Create own "Investmentbolagsindex".
+    """
     ibindex = "ibindex"
 
     def __init__(self, deposit, portfolio_name):
@@ -20,6 +23,14 @@ class IBIndex(Portfolio):
         self.index_file = super().create_csv(self.index_file_name, self.index_folder)
 
     def calculate(self, using_index, price_data, index_data, stocks_to_exclude=None):
+        """
+        TODO: Remove 'using_index' in this method.
+        :param using_index: String
+        :param price_data: Price per stock
+        :param index_data: Weights of the index
+        :param stocks_to_exclude: List of stocks from ibindex to exclude.
+        :return:
+        """
         excluding = None
         calculator = Calculate(price_data, index_data)
         if stocks_to_exclude is not None:
