@@ -20,7 +20,7 @@ class IBIndexSpider(threading.Thread):
         self.index_soup = None
         self.driver = None
 
-    def init_driver(self, path_driver=r"D:\drivers\chromedriver.exe"):
+    def init_driver(self, path_driver=r"C:\drivers\chromedriver.exe"):
         options = Options()
         options.headless = True
         self.driver = webdriver.Chrome(executable_path=path_driver, chrome_options=options)
