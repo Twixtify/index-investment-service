@@ -1,11 +1,7 @@
 /StockApplications/Portfolio/Portfolios/__init__.py
-/StockApplications/Portfolio/Methods/__pycache__/
-/StockApplications/Portfolio/Spiders/__pycache__/
-/StockApplications/Portfolio/__pycache__/
 /StockApplications/Portfolio/PortfolioData/
-/StockApplications/Portfolio/Portfolios/.gitkeep
-.idea/
-../.idea/
+**/.gitkeep
 venv/
-Portfolio/__pycache__/portfolio.cpython-36.pyc
 Portfolio/portfolio.py
+**/__pycache__/
+**/idea/
