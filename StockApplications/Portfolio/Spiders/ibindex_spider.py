@@ -32,7 +32,7 @@ class IBIndexSpider(threading.Thread):
             element_present = ec.presence_of_element_located((By.CLASS_NAME, "index-weight-inner-holder"))
             WebDriverWait(self.driver, timeout).until(element_present)
         except TimeoutException as te:
-            print(te)
+            raise te
         soup = BeautifulSoup(self.driver.page_source, 'html.parser')
         return soup
 

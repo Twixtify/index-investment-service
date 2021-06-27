@@ -41,6 +41,6 @@ MARKET = {
             'sec': 0
         }
 }
-DEFAULT_AVANZA_OPTIONS = ['Köp', 'Sälj', 'Senast', 'Tid']
+DEFAULT_AVANZA_OPTIONS = ['Köp', 'Sälj', 'Senast betalt', 'Tid']
 DATA_TO_SAVE = ['ID', 'Stock', DEFAULT_AVANZA_OPTIONS[2]]
 INDEX_VALUES = ['Stock', 'Weight']

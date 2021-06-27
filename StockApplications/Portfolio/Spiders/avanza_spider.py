@@ -1,8 +1,16 @@
 import os
+import re
 import threading
 
-import requests
 from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.ui import WebDriverWait
+
+from StockApplications.Portfolio.config import DEFAULT_AVANZA_OPTIONS
 
 
 class AvanzaSpider(threading.Thread):
@@ -18,34 +26,56 @@ class AvanzaSpider(threading.Thread):
         self.options = options
         self.stock_soup = None
         self.stock_name = None
+        self.driver = None
         if not os.path.isfile(file.file_path):
             print("No such file: " + file.file_name)
             exit(1)
         else:
             self.file = file
 
-    @staticmethod
-    def get_soup(url):
-        html = requests.get(url, allow_redirects=False)
-        return BeautifulSoup(html.text, 'html.parser')
+    def get_soup(self, url):
+        self.driver.get(url)
+        timeout = 3
+        try:
+            element_present = ec.presence_of_element_located((By.CLASS_NAME, "u-page-container"))
+            WebDriverWait(self.driver, timeout).until(element_present)
+        except TimeoutException as te:
+            raise te
+        soup = BeautifulSoup(self.driver.page_source, 'html.parser')
+        self.driver.quit()
+        return soup
 
-    def get_stock_values(self):
-        values = []
-        tags = self.stock_soup.find_all("li", attrs={"class": "tLeft"})
-        for option in self.options:
-            for tag in tags:
-                subtag = tag.find_all("span", recursive=False)
-                if option in subtag[0].text:
-                    values.append(subtag[1].text)
-        if not len(values) >= 1:
+    def init_driver(self, path_driver=r"C:\drivers\chromedriver.exe"):
+        options = Options()
+        options.headless = True
+        self.driver = webdriver.Chrome(executable_path=path_driver, chrome_options=options)
+
+    def get_latest_stock_value(self):
+        value = None
+        tag = self.stock_soup.find_all("span", attrs={"class": re.compile(r'\blatest\b')})[0].text.split()[0]
+        try:
+            float(tag.replace(',', '.'))
+            value = tag
+        except ValueError as ve:
+            print(ve)
             print(self.__class__, ": No values found on %s" % self.url)
-        return values
+        return value
 
     def init_spider(self):
+        self.init_driver()
         self.stock_soup = self.get_soup(self.url)
-        self.stock_name = self.stock_soup.find_all('title')[0].text.split(" - ")[0]
+        self.stock_name = self.stock_soup.find_all('h1')[0].text.strip()
 
     def run(self):
         self.init_spider()
-        stock_values_list = self.get_stock_values()
+        stock_values_list = []
+        for option in self.options:
+            if option == DEFAULT_AVANZA_OPTIONS[0]:
+                # TODO: Implement get-highest-stock-value
+                pass
+            if option == DEFAULT_AVANZA_OPTIONS[1]:
+                # TODO: Implement get-lowest-stock-value
+                pass
+            if option == DEFAULT_AVANZA_OPTIONS[2]:
+                stock_values_list.append(self.get_latest_stock_value())
         self.file.append_row([self.id, self.stock_name, *stock_values_list])
