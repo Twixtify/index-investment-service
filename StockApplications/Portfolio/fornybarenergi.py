@@ -24,7 +24,7 @@ class Fornybarenergi(Portfolio):
         super().sort_data_by_column(self.index_file, INDEX_VALUES.index('Stock'), header_in_file=False)
 
     def get_price_and_index(self):
-        price_data = super().get_numeric_data(self.data_file, DATA_TO_SAVE.index('Senast'), header_in_file=True)
+        price_data = super().get_numeric_data(self.data_file, DATA_TO_SAVE.index('Senast betalt'), header_in_file=True)
         index_data = super().get_numeric_data(self.index_file, INDEX_VALUES.index('Weight'), header_in_file=False)
         return price_data, index_data
 
