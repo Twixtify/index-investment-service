@@ -3,6 +3,13 @@ import os
 # Path to this 'config.py' folder
 PATH = os.path.dirname(os.path.realpath(__file__))
 ENCODING = 'utf-8'
+METHODS = os.path.join(PATH, "Methods")
+PORTFOLIOS = os.path.join(PATH, "Portfolios")
+SPIDERS = os.path.join(PATH, "Spiders")
+DATA = os.path.join(PATH, "PortfolioData")
+INVESTMENTBOLAG_DATA = os.path.join(DATA, "InvestmentbolagData")
+FORNYBARENERGI_DATA = os.path.join(DATA, "FornybarenergiData")
+
 DIR_PATH = {
     'base': PATH,
     'methods': PATH + "\\" + "Methods",

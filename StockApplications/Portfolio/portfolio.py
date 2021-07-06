@@ -1,23 +1,32 @@
 import os
 
 from StockApplications.Portfolio.Methods.csv_file import CSVFile
+from StockApplications.Portfolio.Methods.data_folder import DataFolder
+from StockApplications.Portfolio.Methods.text_parser import TextParser
 from StockApplications.Portfolio.Spiders.avanza_spider import AvanzaSpider
 from StockApplications.Portfolio.Spiders.manage_threads import ManageThreads
-from StockApplications.Portfolio.config import DATA_TO_SAVE
 from StockApplications.Portfolio.config import DIR_PATH
+from StockApplications.Portfolio.config import ENCODING
 from StockApplications.Portfolio.config import FILE_PATH
-from StockApplications.Portfolio.config import INDEX_VALUES
+from StockApplications.Portfolio.config import PORTFOLIOS
 
-from StockApplications.Portfolio.Methods.data_folder import DataFolder
-from StockApplications.Portfolio.Methods.text_file import TextFile
-from StockApplications.Portfolio.Methods.text_parser import TextParser
+
+def read_file(filename):
+    """
+    Removes newlines from each row.
+    :param filename: File name
+    :return: List with each row as element
+    """
+    with open(filename, encoding=ENCODING) as f:
+        lines = f.read().splitlines()
+    return lines
 
 
 class Portfolio:
     def __init__(self, deposit, portfolio_name):
         self.deposit = deposit
         self.portfolio_name = portfolio_name
-        self.urls = TextFile(self.portfolio_name, DIR_PATH['portfolios']).read_rows()
+        self.urls = read_file(os.path.join(PORTFOLIOS, portfolio_name))
         self.data_file_name = os.path.basename(FILE_PATH['csv'][self.portfolio_name])
         self.data_folder = DIR_PATH['data'][self.portfolio_name]
         DataFolder(self.portfolio_name.title() + "Data").create_folder()
@@ -59,3 +68,9 @@ class Portfolio:
         for thread_id, url in enumerate(urls):
             spiders_list.append(AvanzaSpider(thread_id, url, crawl_options, csv_file))
         return spiders_list
+
+
+if __name__ == "__main__":
+    print(os.path.dirname(os.path.realpath(__file__)))
+    p = Portfolio(1, "investmentbolag")
+    print(vars(p))
