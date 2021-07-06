@@ -1,14 +1,13 @@
 import os
 
-from StockApplications.Portfolio.Methods.csv_file import CSVFile
-from StockApplications.Portfolio.Methods.data_folder import DataFolder
+import pandas as pd
+
 from StockApplications.Portfolio.Methods.text_parser import TextParser
 from StockApplications.Portfolio.Spiders.avanza_spider import AvanzaSpider
 from StockApplications.Portfolio.Spiders.manage_threads import ManageThreads
-from StockApplications.Portfolio.config import DIR_PATH
 from StockApplications.Portfolio.config import ENCODING
-from StockApplications.Portfolio.config import FILE_PATH
 from StockApplications.Portfolio.config import PORTFOLIOS
+from StockApplications.Portfolio.config import DEFAULT_AVANZA_OPTIONS
 
 
 def read_file(filename):
@@ -27,10 +26,7 @@ class Portfolio:
         self.deposit = deposit
         self.portfolio_name = portfolio_name
         self.urls = read_file(os.path.join(PORTFOLIOS, portfolio_name))
-        self.data_file_name = os.path.basename(FILE_PATH['csv'][self.portfolio_name])
-        self.data_folder = DIR_PATH['data'][self.portfolio_name]
-        DataFolder(self.portfolio_name.title() + "Data").create_folder()
-        self.manage_threads = ManageThreads()
+        self.result = pd.DataFrame(columns=DEFAULT_AVANZA_OPTIONS)
 
     def calculate(self, *args):
         pass
@@ -40,10 +36,6 @@ class Portfolio:
 
     def run(self, *args):
         pass
-
-    @classmethod
-    def create_csv(cls, name, folder):
-        return CSVFile(name, folder)
 
     @classmethod
     def sort_data_by_column(cls, csv_file, col_index, header_in_file):
@@ -62,12 +54,15 @@ class Portfolio:
         text_parser.update(text_parser.parse_numeric_texts())
         return list(map(float, text_parser.texts))
 
-    @classmethod
-    def create_avanza_spiders(cls, urls, crawl_options, csv_file):
+    def create_avanza_spiders(self, crawl_options):
+        """
+        :param crawl_options: List or single item from DEFAULT_AVANZA_OPTIONS
+        :return: ManageThreads object
+        """
         spiders_list = []
-        for thread_id, url in enumerate(urls):
-            spiders_list.append(AvanzaSpider(thread_id, url, crawl_options, csv_file))
-        return spiders_list
+        for thread_id, url in enumerate(self.urls):
+            spiders_list.append(AvanzaSpider(thread_id, url, crawl_options))
+        return ManageThreads().add_threads(spiders_list)
 
 
 if __name__ == "__main__":

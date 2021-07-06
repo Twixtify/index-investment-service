@@ -10,29 +10,18 @@ DATA = os.path.join(PATH, "PortfolioData")
 INVESTMENTBOLAG_DATA = os.path.join(DATA, "InvestmentbolagData")
 FORNYBARENERGI_DATA = os.path.join(DATA, "FornybarenergiData")
 
-DIR_PATH = {
-    'base': PATH,
-    'methods': PATH + "\\" + "Methods",
-    'portfolios': PATH + "\\" + "Portfolios",
-    'spiders': PATH + "\\" + "Spiders",
-    'data': {
-        'base': PATH + "\\" + "PortfolioData",
-        'investmentbolag': PATH + "\\" + "PortfolioData" + "\\" + "InvestmentbolagData",
-        'fornybarenergi': PATH + "\\" + "PortfolioData" + "\\" + "FornybarenergiData"
-    }
-}
-FILE_PATH = {
-    'csv': {
-        'investmentbolag': DIR_PATH['data']['investmentbolag'] + "\\" + "data.csv",
-        'investmentbolagindex': DIR_PATH['data']['investmentbolag'] + "\\" + "index.csv",
-        'fornybarenergi': DIR_PATH['data']['fornybarenergi'] + "\\" + "data.csv",
-        'fornybarenergiindex': DIR_PATH['portfolios'] + "\\" + "fornybarenergiindex.csv"
-    },
-    'urls': {
-        'investmentbolag': DIR_PATH['portfolios'] + "\\" + "investmentbolag",
-        'fornybarenergi': DIR_PATH['portfolios'] + "\\" + "fornybarenergi"
-    }
-}
+#FILE_PATH = {
+#    'csv': {
+#        'investmentbolag': DIR_PATH['data']['investmentbolag'] + "\\" + "data.csv",
+#        'investmentbolagindex': DIR_PATH['data']['investmentbolag'] + "\\" + "index.csv",
+#        'fornybarenergi': DIR_PATH['data']['fornybarenergi'] + "\\" + "data.csv",
+#        'fornybarenergiindex': DIR_PATH['portfolios'] + "\\" + "fornybarenergiindex.csv"
+#    },
+#    'urls': {
+#        'investmentbolag': DIR_PATH['portfolios'] + "\\" + "investmentbolag",
+#        'fornybarenergi': DIR_PATH['portfolios'] + "\\" + "fornybarenergi"
+#    }
+#}
 # dictionary with opening and closing times
 MARKET = {
     'OPEN':

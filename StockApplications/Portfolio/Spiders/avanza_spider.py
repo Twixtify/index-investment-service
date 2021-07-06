@@ -14,7 +14,7 @@ from StockApplications.Portfolio.config import DEFAULT_AVANZA_OPTIONS
 
 
 class AvanzaSpider(threading.Thread):
-    def __init__(self, _id, url, options, file):
+    def __init__(self, _id, url, options):
         """
         Constructor of StockSpider
         :param url: Supplied stock on Avanza.
@@ -27,11 +27,17 @@ class AvanzaSpider(threading.Thread):
         self.stock_soup = None
         self.stock_name = None
         self.driver = None
-        if not os.path.isfile(file.file_path):
-            print("No such file: " + file.file_name)
-            exit(1)
-        else:
-            self.file = file
+        self.stock_values_list = {}
+
+    def init_spider(self):
+        self.init_driver()
+        self.stock_soup = self.get_soup(self.url)
+        self.stock_name = self.stock_soup.find_all('h1')[0].text.strip()
+
+    def init_driver(self, path_driver=r"C:\drivers\chromedriver.exe"):
+        options = Options()
+        options.headless = True
+        self.driver = webdriver.Chrome(executable_path=path_driver, chrome_options=options)
 
     def get_soup(self, url):
         self.driver.get(url)
@@ -45,11 +51,6 @@ class AvanzaSpider(threading.Thread):
         self.driver.quit()
         return soup
 
-    def init_driver(self, path_driver=r"C:\drivers\chromedriver.exe"):
-        options = Options()
-        options.headless = True
-        self.driver = webdriver.Chrome(executable_path=path_driver, chrome_options=options)
-
     def get_latest_stock_value(self):
         value = None
         try:
@@ -61,14 +62,8 @@ class AvanzaSpider(threading.Thread):
             print(self.__class__, ": No values found on %s" % self.url)
         return value
 
-    def init_spider(self):
-        self.init_driver()
-        self.stock_soup = self.get_soup(self.url)
-        self.stock_name = self.stock_soup.find_all('h1')[0].text.strip()
-
     def run(self):
         self.init_spider()
-        stock_values_list = []
         for option in self.options:
             if option == DEFAULT_AVANZA_OPTIONS[0]:
                 # TODO: Implement get-highest-stock-value
@@ -77,5 +72,4 @@ class AvanzaSpider(threading.Thread):
                 # TODO: Implement get-lowest-stock-value
                 pass
             if option == DEFAULT_AVANZA_OPTIONS[2]:
-                stock_values_list.append(self.get_latest_stock_value())
-        self.file.append_row([self.id, self.stock_name, *stock_values_list])
+                self.stock_values_list[DEFAULT_AVANZA_OPTIONS[2]] = self.get_latest_stock_value()
