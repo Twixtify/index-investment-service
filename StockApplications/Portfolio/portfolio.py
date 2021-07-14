@@ -7,7 +7,7 @@ from StockApplications.Portfolio.Spiders.avanza_spider import AvanzaSpider
 from StockApplications.Portfolio.Spiders.manage_threads import ManageThreads
 from StockApplications.Portfolio.config import ENCODING
 from StockApplications.Portfolio.config import PORTFOLIOS
-from StockApplications.Portfolio.config import DEFAULT_AVANZA_OPTIONS
+from StockApplications.Portfolio.config import DATA_TO_SAVE
 
 
 def read_file(filename):
@@ -26,7 +26,7 @@ class Portfolio:
         self.deposit = deposit
         self.portfolio_name = portfolio_name
         self.urls = read_file(os.path.join(PORTFOLIOS, portfolio_name))
-        self.result = pd.DataFrame(columns=DEFAULT_AVANZA_OPTIONS)
+        self.result = pd.DataFrame(columns=DATA_TO_SAVE)
 
     def calculate(self, *args):
         pass
