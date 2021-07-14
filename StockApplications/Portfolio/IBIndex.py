@@ -12,10 +12,13 @@ class IBIndex(Portfolio):
     """
     TODO: Create own "Investmentbolagsindex".
     """
-    ibindex = "ibindex"
+    portfolio = "investmentbolag"
 
     def __init__(self, deposit):
-        super().__init__(deposit, IBIndex.ibindex)
+        super().__init__(deposit, IBIndex.portfolio)
+        spiders = self.create_avanza_spiders(crawl_options=DATA_TO_SAVE[2])
+        self.thread_manager.add_threads(spiders)
+        ibindex_spider = IBIndexSpider
 
     def calculate(self, using_index, price_data, index_data, stocks_to_exclude=None):
         """
@@ -35,14 +38,14 @@ class IBIndex(Portfolio):
                 del index_data[i]
             for row in rows_to_exclude:
                 print("Excluding: ", row)
-        if using_index.lower() == IBIndex.ibindex:
+        if using_index.lower() == IBIndex.portfolio:
             results = calculator.calculate_ibindex_distribution(self.deposit, excluding)
             total_price, amount_to_buy, prices_to_buy, index_weights = [*results]
             return total_price, amount_to_buy, prices_to_buy, index_weights, index_data
 
     def gather_data(self, using_index):
         self.manage_threads.add_threads(super().create_avanza_spiders(self.urls, DATA_TO_SAVE, self.data_file))
-        if using_index.lower() == IBIndex.ibindex:
+        if using_index.lower() == IBIndex.portfolio:
             self.manage_threads.add_thread(self.create_ibindex_spider(self.index_file))
         self.manage_threads.start_threads()
         self.manage_threads.join_threads()
@@ -82,7 +85,7 @@ class IBIndex(Portfolio):
 
 
 if __name__ == "__main__":
-    p = IBIndex(deposit=10000, portfolio_name='investmentbolag')
+    p = IBIndex(deposit=10000)
     print(vars(p))
 #    p.run(using_index="IBIndex", stocks_to_exclude=['Havsfrun Investment B',
 #                                                    'NAXS',

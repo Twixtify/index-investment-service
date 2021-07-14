@@ -2,6 +2,7 @@ import re
 import threading
 
 from bs4 import BeautifulSoup
+import pandas as pd
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
@@ -14,6 +15,7 @@ class IBIndexSpider(threading.Thread):
     url = 'http://ibindex.se/ibi/#/index'
 
     def __init__(self, file):
+        # TODO: Use pandas dataframe instead of file
         threading.Thread.__init__(self)
         self.file = file
         self.url = IBIndexSpider.url
