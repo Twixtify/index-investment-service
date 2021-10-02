@@ -16,11 +16,9 @@ from StockApplications.Portfolio.config import INDEX_VALUES
 class IBIndexSpider(threading.Thread):
     url = 'http://ibindex.se/ibi/#/index'
 
-    def __init__(self, file):
-        # TODO: Use pandas dataframe instead of file
+    def __init__(self):
         threading.Thread.__init__(self)
-        self.file = file
-        self.df = pd.DataFrame(columns=INDEX_VALUES)
+        self.df = None
         self.url = IBIndexSpider.url
         self.index_soup = None
         self.driver = None
@@ -61,17 +59,9 @@ class IBIndexSpider(threading.Thread):
         self.index_soup = self.get_soup(self.url)
         self.driver.quit()
         stock_values = self.get_stock_values()
-        self.file.write_rows(stock_values)
+        self.df = pd.DataFrame(stock_values, columns=INDEX_VALUES)
 
 
 if __name__ == '__main__':
-    import os
-    from StockApplications.Portfolio.config import FILE_PATH, DIR_PATH
-    from StockApplications.Portfolio.Methods.csv_file import CSVFile
-
-    data_csv_name = os.path.basename(FILE_PATH['csv']['investmentbolagsindex'])
-    data_csv_folder_path = DIR_PATH['data']['investmentbolag']
-    data_file = CSVFile(data_csv_name, data_csv_folder_path)
-
-    ib = IBIndexSpider(data_file)
+    ib = IBIndexSpider()
     ib.start()

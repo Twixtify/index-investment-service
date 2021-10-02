@@ -1,10 +1,7 @@
 import os
 
-import pandas as pd
-
 from StockApplications.Portfolio.Spiders.avanza_spider import AvanzaSpider
 from StockApplications.Portfolio.Spiders.manage_threads import ManageThreads
-from StockApplications.Portfolio.config import DATA_TO_SAVE
 from StockApplications.Portfolio.config import ENCODING
 from StockApplications.Portfolio.config import PORTFOLIOS
 
@@ -30,7 +27,6 @@ class Portfolio:
         self.name = name
         self.urls = read_file(os.path.join(PORTFOLIOS, name))
         self.thread_manager = ManageThreads()
-        self.result = pd.DataFrame(columns=DATA_TO_SAVE)
 
     def calculate(self, *args):
         pass

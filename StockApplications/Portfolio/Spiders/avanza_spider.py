@@ -48,7 +48,6 @@ class AvanzaSpider(threading.Thread):
         except TimeoutException as te:
             raise te
         soup = BeautifulSoup(self.driver.page_source, 'html.parser')
-        self.driver.quit()
         return soup
 
     def get_latest_stock_value(self):
@@ -73,3 +72,4 @@ class AvanzaSpider(threading.Thread):
                 pass
             if option == DEFAULT_AVANZA_OPTIONS[2]:
                 self.stock_values_list[DEFAULT_AVANZA_OPTIONS[2]] = self.get_latest_stock_value()
+        self.driver.quit()
