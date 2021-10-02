@@ -91,4 +91,5 @@ if __name__ == "__main__":
     p.run(using_index="IBIndex", stocks_to_exclude=['Havsfrun Investment B',
                                                     'NAXS',
                                                     'Traction  B',
-                                                    'Öresund'])
+                                                    'Öresund',
+                                                    'Karolinska Development B'])
