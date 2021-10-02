@@ -52,8 +52,8 @@ class AvanzaSpider(threading.Thread):
 
     def get_latest_stock_value(self):
         value = None
-        tag = self.stock_soup.find_all("span", attrs={"class": re.compile(r'\blatest\b')})[0].text.split()[0]
         try:
+            tag = self.stock_soup.find_all("span", attrs={"class": re.compile(r'\blatest\b')})[0].text.split()[0]
             float(tag.replace(',', '.'))
             value = tag
         except ValueError as ve:
