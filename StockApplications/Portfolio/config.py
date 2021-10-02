@@ -1,16 +1,16 @@
 import os
 
 # Path to this 'config.py' folder
-PATH = os.path.dirname(os.path.realpath(__file__))
+ROOT = os.path.dirname(os.path.realpath(__file__))
 ENCODING = 'utf-8'
-METHODS = os.path.join(PATH, "Methods")
-PORTFOLIOS = os.path.join(PATH, "Portfolios")
-SPIDERS = os.path.join(PATH, "Spiders")
-DATA = os.path.join(PATH, "PortfolioData")
+METHODS = os.path.join(ROOT, "Methods")
+PORTFOLIOS = os.path.join(ROOT, "Portfolios")
+SPIDERS = os.path.join(ROOT, "Spiders")
+DATA = os.path.join(ROOT, "PortfolioData")
 INVESTMENTBOLAG_DATA = os.path.join(DATA, "InvestmentbolagData")
 FORNYBARENERGI_DATA = os.path.join(DATA, "FornybarenergiData")
 
-#FILE_PATH = {
+# FILE_PATH = {
 #    'csv': {
 #        'investmentbolag': DIR_PATH['data']['investmentbolag'] + "\\" + "data.csv",
 #        'investmentbolagindex': DIR_PATH['data']['investmentbolag'] + "\\" + "index.csv",
@@ -21,7 +21,7 @@ FORNYBARENERGI_DATA = os.path.join(DATA, "FornybarenergiData")
 #        'investmentbolag': DIR_PATH['portfolios'] + "\\" + "investmentbolag",
 #        'fornybarenergi': DIR_PATH['portfolios'] + "\\" + "fornybarenergi"
 #    }
-#}
+# }
 # dictionary with opening and closing times
 MARKET = {
     'OPEN':
@@ -40,3 +40,6 @@ MARKET = {
 DEFAULT_AVANZA_OPTIONS = ['Köp', 'Sälj', 'Senast betalt', 'Tid']
 DATA_TO_SAVE = ['ID', 'Stock', DEFAULT_AVANZA_OPTIONS[2]]
 INDEX_VALUES = ['Stock', 'Weight']
+
+if __name__ == "__main__":
+    print(ROOT)
