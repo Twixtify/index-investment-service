@@ -10,7 +10,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-from StockApplications.Portfolio.config import INDEX_VALUES
+from StockApplications.Portfolio.config import STOCK, WEIGHT
 
 
 class IBIndexSpider(threading.Thread):
@@ -59,7 +59,7 @@ class IBIndexSpider(threading.Thread):
         self.index_soup = self.get_soup(self.url)
         self.driver.quit()
         stock_values = self.get_stock_values()
-        self.df = pd.DataFrame(stock_values, columns=INDEX_VALUES)
+        self.df = pd.DataFrame(stock_values, columns=[STOCK, WEIGHT])
 
 
 if __name__ == '__main__':

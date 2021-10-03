@@ -1,4 +1,3 @@
-import os
 import re
 import threading
 
@@ -10,7 +9,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-from StockApplications.Portfolio.config import DEFAULT_AVANZA_OPTIONS
+from StockApplications.Portfolio.config import ID, STOCK, BUY, SELL, LATEST_PRICE
 
 
 class AvanzaSpider(threading.Thread):
@@ -41,7 +40,7 @@ class AvanzaSpider(threading.Thread):
 
     def get_soup(self, url):
         self.driver.get(url)
-        timeout = 3
+        timeout = 5
         try:
             element_present = ec.presence_of_element_located((By.CLASS_NAME, "u-page-container"))
             WebDriverWait(self.driver, timeout).until(element_present)
@@ -63,13 +62,15 @@ class AvanzaSpider(threading.Thread):
 
     def run(self):
         self.init_spider()
+        self.stock_values_list[ID] = self.id
+        self.stock_values_list[STOCK] = self.stock_name
         for option in self.options:
-            if option == DEFAULT_AVANZA_OPTIONS[0]:
+            if option == BUY:
                 # TODO: Implement get-highest-stock-value
                 pass
-            if option == DEFAULT_AVANZA_OPTIONS[1]:
+            if option == SELL:
                 # TODO: Implement get-lowest-stock-value
                 pass
-            if option == DEFAULT_AVANZA_OPTIONS[2]:
-                self.stock_values_list[DEFAULT_AVANZA_OPTIONS[2]] = self.get_latest_stock_value()
+            if option == LATEST_PRICE:
+                self.stock_values_list[LATEST_PRICE] = self.get_latest_stock_value()
         self.driver.quit()

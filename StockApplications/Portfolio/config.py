@@ -1,5 +1,14 @@
 import os
 
+# Useful variable names
+ID = 'ID'
+STOCK = 'Stock'
+WEIGHT = 'Weight'
+BUY = 'Köp'
+SELL = 'Sälj'
+LATEST_PRICE = 'Senast betalt'
+TIME = 'Tid'
+
 # Path to this 'config.py' folder
 ROOT = os.path.dirname(os.path.realpath(__file__))
 ENCODING = 'utf-8'
@@ -37,9 +46,6 @@ MARKET = {
             'sec': 0
         }
 }
-DEFAULT_AVANZA_OPTIONS = ['Köp', 'Sälj', 'Senast betalt', 'Tid']
-DATA_TO_SAVE = ['ID', 'Stock', DEFAULT_AVANZA_OPTIONS[2]]
-INDEX_VALUES = ['Stock', 'Weight']
 
 if __name__ == "__main__":
     print(ROOT)
