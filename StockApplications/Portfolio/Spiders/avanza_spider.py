@@ -62,7 +62,6 @@ class AvanzaSpider(threading.Thread):
 
     def run(self):
         self.init_spider()
-        self.stock_values_list[ID] = self.id
         self.stock_values_list[STOCK] = self.stock_name
         for option in self.options:
             if option == BUY:

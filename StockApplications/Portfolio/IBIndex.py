@@ -1,7 +1,9 @@
 import pandas as pd
 
+import numpy as np
+
 from StockApplications.Portfolio.Spiders.ibindex_spider import IBIndexSpider
-from StockApplications.Portfolio.config import ID, STOCK, LATEST_PRICE, IBINDEX
+from StockApplications.Portfolio.config import ID, STOCK, LATEST_PRICE, IBINDEX, WEIGHT, TOTAL_PRICE, AMOUNT_TO_BUY
 from StockApplications.Portfolio.portfolio import Portfolio
 
 
@@ -29,7 +31,7 @@ def float_to_percent(f):
     :param f: Float.
     :return: String
     """
-    return str(f * 100) + '%'
+    return str(np.round(f * 100, decimals=2)) + '%'
 
 
 class IBIndex(Portfolio):
@@ -43,7 +45,7 @@ class IBIndex(Portfolio):
         self.thread_manager.add_thread(IBIndexSpider())
         spiders = self.create_avanza_spiders(crawl_options=[ID, STOCK, LATEST_PRICE])
         self.thread_manager.add_threads(spiders)
-        self.result = pd.DataFrame(columns=[ID, STOCK, LATEST_PRICE])
+        self.result = pd.DataFrame(columns=[STOCK, LATEST_PRICE])
 
     def calculate(self, index_data, stocks_to_exclude):
         """
@@ -52,23 +54,15 @@ class IBIndex(Portfolio):
         :return:
         """
         self.result[LATEST_PRICE] = self.result[LATEST_PRICE].map(string_to_float)
-        index_data[IBINDEX] = index_data[IBINDEX].map(percent_to_float)
         excluding_stocks = index_data.loc[index_data[STOCK].isin(stocks_to_exclude)]
-        print(excluding_stocks)
-        print(self.result)
-        # self
-        # calculator = Calculate(self.deposit, index_data)
-        # if stocks_to_exclude is not None:
-        #     excluding = self.index_file.get_items_row_index(stocks_to_exclude)
-        #     _, rows_to_exclude = self.index_file.read_and_exclude_rows(stocks_to_exclude)
-        #     for i in sorted(excluding, reverse=True):
-        #         del index_data[i]
-        #     for row in rows_to_exclude:
-        #         print("Excluding: ", row)
-        # if using_index.lower() == IBIndex.portfolio:
-        #     results = calculator.calculate_ibindex_distribution(self.deposit, excluding)
-        #     total_price, amount_to_buy, prices_to_buy, index_weights = [*results]
-        #     return total_price, amount_to_buy, prices_to_buy, index_weights, index_data
+        print("Excluding: \n", excluding_stocks)
+        excluding_arr = excluding_stocks[IBINDEX].map(percent_to_float).to_numpy()
+        to_add = np.sum(excluding_arr) / len(self.result.index)
+        print("Average weight to add from excluded stocks: ", float_to_percent(to_add))
+        self.result[WEIGHT] = self.result[IBINDEX].map(lambda x: percent_to_float(x) + to_add)
+        self.result[TOTAL_PRICE] = self.result[WEIGHT] * self.deposit
+        self.result[AMOUNT_TO_BUY] = self.result[TOTAL_PRICE] / self.result[LATEST_PRICE]
+        self.result[AMOUNT_TO_BUY] = self.result[AMOUNT_TO_BUY].map(lambda x: np.rint(x))
 
     def gather_data(self):
         self.thread_manager.start_threads()
@@ -94,22 +88,7 @@ class IBIndex(Portfolio):
         index_data = self.extract_and_sort()
         self.result = self.result.merge(index_data, on=STOCK)
         self.calculate(index_data, stocks_to_exclude)
-        # price_data, index_data = self.get_price_and_index()
-        # total_price, n_stocks, price_stocks, index_weights, index_data = self.calculate(using_index,
-        #                                                                                 price_data,
-        #                                                                                 index_data,
-        #                                                                                 stocks_to_exclude)
-        # stock_names = self.data_file.read_csv_column(DATA_TO_SAVE.index('Stock'), header_in_file=True)
-        # result = zip(["name", *stock_names],
-        #              ["ibindex", *index_data],
-        #              ["weights", *index_weights],
-        #              ["price each", *price_data],
-        #              ["total", *price_stocks],
-        #              ["number", *n_stocks])
-        # result_file = CSVFile('result.csv', self.data_file.folder_path)
-        # result_file.write_rows(result)
-        # result_file.pprint_self()
-        # print("Total price:", total_price, "Difference:", self.deposit - total_price)
+        self.result[WEIGHT] = self.result[WEIGHT].map(float_to_percent)
 
 
 if __name__ == "__main__":
@@ -120,3 +99,5 @@ if __name__ == "__main__":
                              'Öresund',
                              'Karolinska Development B',
                              'Fastator'])
+    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        print(p.result.to_string(index=False))

@@ -1,14 +1,18 @@
 import os
 
 # Useful variable names
+# ---- DataFrame column names ----
 ID = 'ID'
-STOCK = 'Stock'
-WEIGHT = 'Weight'
+STOCK = 'Aktie'
+WEIGHT = 'Viktning'
+IBINDEX = "ibindex"
+AMOUNT_TO_BUY = 'Antal att köpa'
+TOTAL_PRICE = 'Totalt pris'
+# ---- Crawl options ----
 BUY = 'Köp'
 SELL = 'Sälj'
 LATEST_PRICE = 'Senast betalt'
 TIME = 'Tid'
-IBINDEX = "ibindex"
 
 # Path to this 'config.py' folder
 ROOT = os.path.dirname(os.path.realpath(__file__))
