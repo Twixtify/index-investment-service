@@ -40,7 +40,7 @@ class AvanzaSpider(threading.Thread):
 
     def get_soup(self, url):
         self.driver.get(url)
-        timeout = 5
+        timeout = 0
         try:
             element_present = ec.presence_of_element_located((By.CLASS_NAME, "u-page-container"))
             WebDriverWait(self.driver, timeout).until(element_present)
@@ -55,8 +55,8 @@ class AvanzaSpider(threading.Thread):
             tag = self.stock_soup.find_all("span", attrs={"class": re.compile(r'\blatest\b')})[0].text.split()[0]
             float(tag.replace(',', '.'))
             value = tag
-        except ValueError as ve:
-            print(ve)
+        except (ValueError, IndexError) as e:
+            print(e)
             print(self.__class__, ": No values found on %s" % self.url)
         return value
 
@@ -73,4 +73,7 @@ class AvanzaSpider(threading.Thread):
                 pass
             if option == LATEST_PRICE:
                 self.stock_values_list[LATEST_PRICE] = self.get_latest_stock_value()
+        print("Success! ({id}) {stock} : {price}".format(id=self.id,
+                                                         stock=self.stock_name,
+                                                         price=self.stock_values_list.get(LATEST_PRICE)))
         self.driver.quit()

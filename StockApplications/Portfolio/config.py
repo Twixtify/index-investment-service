@@ -8,6 +8,7 @@ BUY = 'Köp'
 SELL = 'Sälj'
 LATEST_PRICE = 'Senast betalt'
 TIME = 'Tid'
+IBINDEX = "ibindex"
 
 # Path to this 'config.py' folder
 ROOT = os.path.dirname(os.path.realpath(__file__))

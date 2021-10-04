@@ -1,8 +1,7 @@
 import pandas as pd
 
-from StockApplications.Portfolio.Methods.calculate import Calculate
 from StockApplications.Portfolio.Spiders.ibindex_spider import IBIndexSpider
-from StockApplications.Portfolio.config import ID, STOCK, LATEST_PRICE, WEIGHT
+from StockApplications.Portfolio.config import ID, STOCK, LATEST_PRICE, IBINDEX
 from StockApplications.Portfolio.portfolio import Portfolio
 
 
@@ -44,20 +43,19 @@ class IBIndex(Portfolio):
         self.thread_manager.add_thread(IBIndexSpider())
         spiders = self.create_avanza_spiders(crawl_options=[ID, STOCK, LATEST_PRICE])
         self.thread_manager.add_threads(spiders)
-        self.ibindex_df = pd.DataFrame(columns=[STOCK, WEIGHT])
         self.result = pd.DataFrame(columns=[ID, STOCK, LATEST_PRICE])
 
-    def calculate(self, stocks_to_exclude=None):
+    def calculate(self, index_data, stocks_to_exclude):
         """
+        :param index_data: Pandas DataFrame('Stock', 'Weight')
         :param stocks_to_exclude: List of stocks from ibindex to exclude.
         :return:
         """
         self.result[LATEST_PRICE] = self.result[LATEST_PRICE].map(string_to_float)
-        self.ibindex_df[WEIGHT] = self.ibindex_df[WEIGHT].map(percent_to_float)
-        excluding_stocks = self.ibindex_df.loc[self.ibindex_df[STOCK].isin(stocks_to_exclude)]
-        print(self.result)
-        print(self.ibindex_df)
+        index_data[IBINDEX] = index_data[IBINDEX].map(percent_to_float)
+        excluding_stocks = index_data.loc[index_data[STOCK].isin(stocks_to_exclude)]
         print(excluding_stocks)
+        print(self.result)
         # self
         # calculator = Calculate(self.deposit, index_data)
         # if stocks_to_exclude is not None:
@@ -76,20 +74,26 @@ class IBIndex(Portfolio):
         self.thread_manager.start_threads()
         self.thread_manager.join_threads()
 
-    def sort_data(self):
+    def extract_and_sort(self):
+        """
+        Extract data from spiders and add to respective dataframe.
+        Sort DataFrame by stock name.
+        :return:
+        """
+        index_df = pd.DataFrame()
         for spider in self.thread_manager.threads:
             if not isinstance(spider, IBIndexSpider):
                 self.result = self.result.append(spider.stock_values_list, ignore_index=True)
             else:
-                self.ibindex_df = self.ibindex_df.append(spider.df)
+                index_df = index_df.append(spider.df)
         self.result = self.result.sort_values(by=STOCK)
-        self.ibindex_df = self.ibindex_df.sort_values(by=STOCK)
+        return index_df.sort_values(by=STOCK)
 
     def run(self, stocks_to_exclude):
         self.gather_data()
-        self.sort_data()
-        self.calculate(stocks_to_exclude)
-        print()
+        index_data = self.extract_and_sort()
+        self.result = self.result.merge(index_data, on=STOCK)
+        self.calculate(index_data, stocks_to_exclude)
         # price_data, index_data = self.get_price_and_index()
         # total_price, n_stocks, price_stocks, index_weights, index_data = self.calculate(using_index,
         #                                                                                 price_data,

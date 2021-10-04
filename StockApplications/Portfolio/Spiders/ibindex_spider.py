@@ -10,7 +10,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
-from StockApplications.Portfolio.config import STOCK, WEIGHT
+from StockApplications.Portfolio.config import STOCK, IBINDEX
 
 
 class IBIndexSpider(threading.Thread):
@@ -41,7 +41,7 @@ class IBIndexSpider(threading.Thread):
 
     def get_stock_values(self):
         """
-        Return values in the shape ['names', 'weights']
+        Return values in the shape [('name', 'weight')]
         :return:
         """
         weights = []
@@ -59,7 +59,8 @@ class IBIndexSpider(threading.Thread):
         self.index_soup = self.get_soup(self.url)
         self.driver.quit()
         stock_values = self.get_stock_values()
-        self.df = pd.DataFrame(stock_values, columns=[STOCK, WEIGHT])
+        self.df = pd.DataFrame(stock_values, columns=[STOCK, IBINDEX])
+        print("Success! ibindex")
 
 
 if __name__ == '__main__':
