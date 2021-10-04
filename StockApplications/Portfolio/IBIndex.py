@@ -101,3 +101,4 @@ if __name__ == "__main__":
                              'Fastator'])
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):
         print(p.result.to_string(index=False))
+    print("Total price:", p.result[TOTAL_PRICE].sum(), "Difference:", p.deposit - p.result[TOTAL_PRICE].sum())
