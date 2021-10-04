@@ -60,9 +60,9 @@ class IBIndex(Portfolio):
         to_add = np.sum(excluding_arr) / len(self.result.index)
         print("Average weight to add from excluded stocks: ", float_to_percent(to_add))
         self.result[WEIGHT] = self.result[IBINDEX].map(lambda x: percent_to_float(x) + to_add)
-        self.result[TOTAL_PRICE] = self.result[WEIGHT] * self.deposit
-        self.result[AMOUNT_TO_BUY] = self.result[TOTAL_PRICE] / self.result[LATEST_PRICE]
+        self.result[AMOUNT_TO_BUY] = self.deposit * self.result[WEIGHT] / self.result[LATEST_PRICE]
         self.result[AMOUNT_TO_BUY] = self.result[AMOUNT_TO_BUY].map(lambda x: np.rint(x))
+        self.result[TOTAL_PRICE] = self.result[AMOUNT_TO_BUY] * self.result[LATEST_PRICE]
 
     def gather_data(self):
         self.thread_manager.start_threads()
