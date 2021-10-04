@@ -10,7 +10,7 @@ class Fornybarenergi(Portfolio):
         super().__init__(deposit, portfolio_name)
         self.data_file = super().create_csv(self.data_file_name, self.data_folder)
         self.data_file.write_row(DATA_TO_SAVE)
-        self.index_file_name = os.path.basename(FILE_PATH['csv'][self.portfolio_name + 'index'])
+        self.index_file_name = os.path.basename(FILE_PATH['csv'][self.name + 'index'])
         self.index_folder = DIR_PATH['portfolios']
         self.index_file = super().create_csv(self.index_file_name, self.index_folder)
 

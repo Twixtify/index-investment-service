@@ -1,6 +1,7 @@
 import re
 import threading
 
+import pandas as pd
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -9,13 +10,15 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 
+from StockApplications.Portfolio.config import STOCK, IBINDEX
+
 
 class IBIndexSpider(threading.Thread):
     url = 'http://ibindex.se/ibi/#/index'
 
-    def __init__(self, file):
+    def __init__(self):
         threading.Thread.__init__(self)
-        self.file = file
+        self.df = None
         self.url = IBIndexSpider.url
         self.index_soup = None
         self.driver = None
@@ -37,6 +40,10 @@ class IBIndexSpider(threading.Thread):
         return soup
 
     def get_stock_values(self):
+        """
+        Return values in the shape [('name', 'weight')]
+        :return:
+        """
         weights = []
         tags = self.index_soup.find_all("td", attrs={"class": re.compile(r"text-small\s\b(hand|right)\b")})
         for tag in tags:
@@ -52,17 +59,10 @@ class IBIndexSpider(threading.Thread):
         self.index_soup = self.get_soup(self.url)
         self.driver.quit()
         stock_values = self.get_stock_values()
-        self.file.write_rows(stock_values)
+        self.df = pd.DataFrame(stock_values, columns=[STOCK, IBINDEX])
+        print("Success! ibindex")
 
 
 if __name__ == '__main__':
-    import os
-    from StockApplications.Portfolio.config import FILE_PATH, DIR_PATH
-    from StockApplications.Portfolio.Methods.csv_file import CSVFile
-
-    data_csv_name = os.path.basename(FILE_PATH['csv']['investmentbolagsindex'])
-    data_csv_folder_path = DIR_PATH['data']['investmentbolag']
-    data_file = CSVFile(data_csv_name, data_csv_folder_path)
-
-    ib = IBIndexSpider(data_file)
+    ib = IBIndexSpider()
     ib.start()

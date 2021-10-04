@@ -1,31 +1,41 @@
 import os
 
+# Useful variable names
+# ---- DataFrame column names ----
+ID = 'ID'
+STOCK = 'Aktie'
+WEIGHT = 'Viktning'
+IBINDEX = "ibindex"
+AMOUNT_TO_BUY = 'Antal att köpa'
+TOTAL_PRICE = 'Totalt pris'
+# ---- Crawl options ----
+BUY = 'Köp'
+SELL = 'Sälj'
+LATEST_PRICE = 'Senast betalt'
+TIME = 'Tid'
+
 # Path to this 'config.py' folder
-PATH = os.path.dirname(os.path.realpath(__file__))
+ROOT = os.path.dirname(os.path.realpath(__file__))
 ENCODING = 'utf-8'
-DIR_PATH = {
-    'base': PATH,
-    'methods': PATH + "\\" + "Methods",
-    'portfolios': PATH + "\\" + "Portfolios",
-    'spiders': PATH + "\\" + "Spiders",
-    'data': {
-        'base': PATH + "\\" + "PortfolioData",
-        'investmentbolag': PATH + "\\" + "PortfolioData" + "\\" + "InvestmentbolagData",
-        'fornybarenergi': PATH + "\\" + "PortfolioData" + "\\" + "FornybarenergiData"
-    }
-}
-FILE_PATH = {
-    'csv': {
-        'investmentbolag': DIR_PATH['data']['investmentbolag'] + "\\" + "data.csv",
-        'investmentbolagindex': DIR_PATH['data']['investmentbolag'] + "\\" + "index.csv",
-        'fornybarenergi': DIR_PATH['data']['fornybarenergi'] + "\\" + "data.csv",
-        'fornybarenergiindex': DIR_PATH['portfolios'] + "\\" + "fornybarenergiindex.csv"
-    },
-    'urls': {
-        'investmentbolag': DIR_PATH['portfolios'] + "\\" + "investmentbolag",
-        'fornybarenergi': DIR_PATH['portfolios'] + "\\" + "fornybarenergi"
-    }
-}
+METHODS = os.path.join(ROOT, "Methods")
+PORTFOLIOS = os.path.join(ROOT, "Portfolios")
+SPIDERS = os.path.join(ROOT, "Spiders")
+DATA = os.path.join(ROOT, "PortfolioData")
+INVESTMENTBOLAG_DATA = os.path.join(DATA, "InvestmentbolagData")
+FORNYBARENERGI_DATA = os.path.join(DATA, "FornybarenergiData")
+
+# FILE_PATH = {
+#    'csv': {
+#        'investmentbolag': DIR_PATH['data']['investmentbolag'] + "\\" + "data.csv",
+#        'investmentbolagindex': DIR_PATH['data']['investmentbolag'] + "\\" + "index.csv",
+#        'fornybarenergi': DIR_PATH['data']['fornybarenergi'] + "\\" + "data.csv",
+#        'fornybarenergiindex': DIR_PATH['portfolios'] + "\\" + "fornybarenergiindex.csv"
+#    },
+#    'urls': {
+#        'investmentbolag': DIR_PATH['portfolios'] + "\\" + "investmentbolag",
+#        'fornybarenergi': DIR_PATH['portfolios'] + "\\" + "fornybarenergi"
+#    }
+# }
 # dictionary with opening and closing times
 MARKET = {
     'OPEN':
@@ -41,6 +51,6 @@ MARKET = {
             'sec': 0
         }
 }
-DEFAULT_AVANZA_OPTIONS = ['Köp', 'Sälj', 'Senast betalt', 'Tid']
-DATA_TO_SAVE = ['ID', 'Stock', DEFAULT_AVANZA_OPTIONS[2]]
-INDEX_VALUES = ['Stock', 'Weight']
+
+if __name__ == "__main__":
+    print(ROOT)
