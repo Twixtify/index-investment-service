@@ -91,14 +91,27 @@ class IBIndex(Portfolio):
         self.result[WEIGHT] = self.result[WEIGHT].map(float_to_percent)
 
 
+def main(func, args):
+    import cProfile
+    import pstats
+
+    with cProfile.Profile() as pr:
+        func(args)
+
+    stats = pstats.Stats(pr)
+    stats.sort_stats(pstats.SortKey.TIME)
+    stats.print_stats()
+
+
 if __name__ == "__main__":
     p = IBIndex(deposit=10000)
-    p.run(stocks_to_exclude=['Havsfrun Investment B',
-                             'NAXS',
-                             'Traction  B',
-                             'Öresund',
-                             'Karolinska Development B',
-                             'Fastator'])
+    stocks_to_exclude = ['Havsfrun Investment B',
+                         'NAXS',
+                         'Traction  B',
+                         'Öresund',
+                         'Karolinska Development B',
+                         'Fastator']
+    main(p.run, stocks_to_exclude)
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):
         print(p.result.to_string(index=False))
     print("Total price:", p.result[TOTAL_PRICE].sum(), "Difference:", p.deposit - p.result[TOTAL_PRICE].sum())
