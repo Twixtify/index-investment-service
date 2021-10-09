@@ -71,7 +71,6 @@ class AvanzaSpider(threading.Thread):
                 latest_price = self.get_latest_stock_value(soup, stock_name)
                 result[LATEST_PRICE] = latest_price
                 print("Success! Latest price {stock} : {price}".format(stock=stock_name, price=latest_price))
-        self.stock_values_list.append(result)
         return result
 
     def run(self):
@@ -83,7 +82,9 @@ class AvanzaSpider(threading.Thread):
                 future_obj = executor.submit(self.crawl, url)
                 futures.append(future_obj)
 
-        print(self.stock_values_list)
+        for future in concurrent.futures.as_completed(futures):
+            result = future.result()
+            self.stock_values_list.append(result)
 
 
 def main():
