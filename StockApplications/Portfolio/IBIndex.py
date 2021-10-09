@@ -1,9 +1,9 @@
+import numpy as np
 import pandas as pd
 
-import numpy as np
-
+from StockApplications.Portfolio.Spiders.avanza_spider import AvanzaSpider
 from StockApplications.Portfolio.Spiders.ibindex_spider import IBIndexSpider
-from StockApplications.Portfolio.config import ID, STOCK, LATEST_PRICE, IBINDEX, WEIGHT, TOTAL_PRICE, AMOUNT_TO_BUY
+from StockApplications.Portfolio.config import STOCK, LATEST_PRICE, IBINDEX, WEIGHT, TOTAL_PRICE, AMOUNT_TO_BUY
 from StockApplications.Portfolio.portfolio import Portfolio
 
 
@@ -42,27 +42,11 @@ class IBIndex(Portfolio):
 
     def __init__(self, deposit):
         super().__init__(deposit, IBIndex.portfolio)
-        self.thread_manager.add_thread(IBIndexSpider())
-        spiders = self.create_avanza_spiders(crawl_options=[ID, STOCK, LATEST_PRICE])
-        self.thread_manager.add_threads(spiders)
+        index_spider = IBIndexSpider()
+        stock_spider = AvanzaSpider(self.urls, options=[STOCK, LATEST_PRICE])
+        self.thread_manager.add_thread(index_spider)
+        self.thread_manager.add_thread(stock_spider)
         self.result = pd.DataFrame(columns=[STOCK, LATEST_PRICE])
-
-    def calculate(self, index_data, stocks_to_exclude):
-        """
-        :param index_data: Pandas DataFrame('Stock', 'Weight')
-        :param stocks_to_exclude: List of stocks from ibindex to exclude.
-        :return:
-        """
-        self.result[LATEST_PRICE] = self.result[LATEST_PRICE].map(string_to_float)
-        excluding_stocks = index_data.loc[index_data[STOCK].isin(stocks_to_exclude)]
-        print("Excluding: \n", excluding_stocks)
-        excluding_arr = excluding_stocks[IBINDEX].map(percent_to_float).to_numpy()
-        to_add = np.sum(excluding_arr) / len(self.result.index)
-        print("Average weight to add from excluded stocks: ", float_to_percent(to_add))
-        self.result[WEIGHT] = self.result[IBINDEX].map(lambda x: percent_to_float(x) + to_add)
-        self.result[AMOUNT_TO_BUY] = self.deposit * self.result[WEIGHT] / self.result[LATEST_PRICE]
-        self.result[AMOUNT_TO_BUY] = self.result[AMOUNT_TO_BUY].map(lambda x: np.rint(x))
-        self.result[TOTAL_PRICE] = self.result[AMOUNT_TO_BUY] * self.result[LATEST_PRICE]
 
     def gather_data(self):
         self.thread_manager.start_threads()
@@ -82,6 +66,23 @@ class IBIndex(Portfolio):
                 index_df = index_df.append(spider.df)
         self.result = self.result.sort_values(by=STOCK)
         return index_df.sort_values(by=STOCK)
+
+    def calculate(self, index_data, stocks_to_exclude):
+        """
+        :param index_data: Pandas DataFrame('Stock', 'Weight')
+        :param stocks_to_exclude: List of stocks from ibindex to exclude.
+        :return:
+        """
+        self.result[LATEST_PRICE] = self.result[LATEST_PRICE].map(string_to_float)
+        excluding_stocks = index_data.loc[index_data[STOCK].isin(stocks_to_exclude)]
+        print("Excluding: \n", excluding_stocks)
+        excluding_arr = excluding_stocks[IBINDEX].map(percent_to_float).to_numpy()
+        to_add = np.sum(excluding_arr) / len(self.result.index)
+        print("Average weight to add from excluded stocks: ", float_to_percent(to_add))
+        self.result[WEIGHT] = self.result[IBINDEX].map(lambda x: percent_to_float(x) + to_add)
+        self.result[AMOUNT_TO_BUY] = self.deposit * self.result[WEIGHT] / self.result[LATEST_PRICE]
+        self.result[AMOUNT_TO_BUY] = self.result[AMOUNT_TO_BUY].map(lambda x: np.rint(x))
+        self.result[TOTAL_PRICE] = self.result[AMOUNT_TO_BUY] * self.result[LATEST_PRICE]
 
     def run(self, stocks_to_exclude):
         self.gather_data()

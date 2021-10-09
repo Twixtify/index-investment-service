@@ -1,6 +1,5 @@
 import os
 
-from StockApplications.Portfolio.Spiders.avanza_spider import AvanzaSpider
 from StockApplications.Portfolio.Spiders.manage_threads import ManageThreads
 from StockApplications.Portfolio.config import ENCODING
 from StockApplications.Portfolio.config import PORTFOLIOS
@@ -36,16 +35,6 @@ class Portfolio:
 
     def run(self, *args):
         pass
-
-    def create_avanza_spiders(self, crawl_options):
-        """
-        :param crawl_options: List or single item from DEFAULT_AVANZA_OPTIONS
-        :return: ManageThreads object
-        """
-        spiders_list = []
-        for thread_id, url in enumerate(self.urls):
-            spiders_list.append(AvanzaSpider(thread_id, url, crawl_options))
-        return spiders_list
 
 
 if __name__ == "__main__":
