@@ -61,9 +61,9 @@ class IBIndex(Portfolio):
         index_df = pd.DataFrame()
         for spider in self.thread_manager.threads:
             if not isinstance(spider, IBIndexSpider):
-                self.result = self.result.append(spider.stock_values_list, ignore_index=True)
+                self.result = self.result.append(spider.result, ignore_index=True)
             else:
-                index_df = index_df.append(spider.df)
+                index_df = index_df.append(spider.result)
         self.result = self.result.sort_values(by=STOCK)
         return index_df.sort_values(by=STOCK)
 

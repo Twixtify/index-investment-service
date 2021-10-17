@@ -37,7 +37,7 @@ class AvanzaSpider(threading.Thread):
         threading.Thread.__init__(self)
         self.urls = urls
         self.options = options
-        self.stock_values_list = []
+        self.result = []
 
     @classmethod
     def get_stock_name(cls, soup):
@@ -83,8 +83,8 @@ class AvanzaSpider(threading.Thread):
                 futures.append(future_obj)
 
         for future in concurrent.futures.as_completed(futures):
-            result = future.result()
-            self.stock_values_list.append(result)
+            crawl_result = future.result()
+            self.result.append(crawl_result)
 
 
 def main():
