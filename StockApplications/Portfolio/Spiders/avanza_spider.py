@@ -1,68 +1,65 @@
+import concurrent.futures
 import re
 import threading
 
 from bs4 import BeautifulSoup
 from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as ec
-from selenium.webdriver.support.ui import WebDriverWait
 
-from StockApplications.Portfolio.config import ID, STOCK, BUY, SELL, LATEST_PRICE
+from StockApplications.Portfolio.config import STOCK, BUY, SELL, LATEST_PRICE
+
+
+def get_driver(path_driver=r"C:\drivers\chromedriver.exe"):
+    options = Options()
+    options.headless = True
+    return webdriver.Chrome(executable_path=path_driver, options=options)
+
+
+def get_content(driver, url):
+    driver.get(url)
+    content = driver.page_source
+    driver.quit()
+    return content
+
+
+def get_soup(url_source, parser='html.parser'):
+    return BeautifulSoup(url_source, parser)
 
 
 class AvanzaSpider(threading.Thread):
-    def __init__(self, _id, url, options):
+    MAX_THREADS = 30
+
+    def __init__(self, urls, options):
         """
-        Constructor of StockSpider
-        :param url: Supplied stock on Avanza.
+        :param urls: Supplied stock on Avanza.
         :param options: What options to track on Avanza
         """
         threading.Thread.__init__(self)
-        self.id = _id
-        self.url = url
+        self.urls = urls
         self.options = options
-        self.stock_soup = None
-        self.stock_name = None
-        self.driver = None
-        self.stock_values_list = {}
+        self.result = []
 
-    def init_spider(self):
-        self.init_driver()
-        self.stock_soup = self.get_soup(self.url)
-        self.stock_name = self.stock_soup.find_all('h1')[0].text.strip()
+    @classmethod
+    def get_stock_name(cls, soup):
+        return soup.find_all('h1')[0].text.strip()
 
-    def init_driver(self, path_driver=r"C:\drivers\chromedriver.exe"):
-        options = Options()
-        options.headless = True
-        self.driver = webdriver.Chrome(executable_path=path_driver, chrome_options=options)
-
-    def get_soup(self, url):
-        self.driver.get(url)
-        timeout = 0
+    def get_latest_stock_value(self, soup, stock_name):
         try:
-            element_present = ec.presence_of_element_located((By.CLASS_NAME, "u-page-container"))
-            WebDriverWait(self.driver, timeout).until(element_present)
-        except TimeoutException as te:
-            raise te
-        soup = BeautifulSoup(self.driver.page_source, 'html.parser')
-        return soup
-
-    def get_latest_stock_value(self):
-        value = None
-        try:
-            tag = self.stock_soup.find_all("span", attrs={"class": re.compile(r'\blatest\b')})[0].text.split()[0]
-            float(tag.replace(',', '.'))
-            value = tag
+            latest_value = soup.find_all("span", attrs={"class": re.compile(r'\blatest\b')})[0].text.split()[0]
+            float(latest_value.replace(',', '.'))
+            return latest_value
         except (ValueError, IndexError) as e:
             print(e)
-            print(self.__class__, ": No values found on %s" % self.url)
-        return value
+            print(self.__class__, ": No values found on %s" % stock_name)
 
-    def run(self):
-        self.init_spider()
-        self.stock_values_list[STOCK] = self.stock_name
+    def crawl(self, url):
+        result = {}
+
+        driver = get_driver()
+        content = get_content(driver, url)
+        soup = get_soup(content)
+        stock_name = self.get_stock_name(soup)
+        result[STOCK] = stock_name
         for option in self.options:
             if option == BUY:
                 # TODO: Implement get-highest-stock-value
@@ -71,8 +68,31 @@ class AvanzaSpider(threading.Thread):
                 # TODO: Implement get-lowest-stock-value
                 pass
             if option == LATEST_PRICE:
-                self.stock_values_list[LATEST_PRICE] = self.get_latest_stock_value()
-        print("Success! ({id}) {stock} : {price}".format(id=self.id,
-                                                         stock=self.stock_name,
-                                                         price=self.stock_values_list.get(LATEST_PRICE)))
-        self.driver.quit()
+                latest_price = self.get_latest_stock_value(soup, stock_name)
+                result[LATEST_PRICE] = latest_price
+                print("Success! Latest price {stock} : {price}".format(stock=stock_name, price=latest_price))
+        return result
+
+    def run(self):
+        threads = min(self.MAX_THREADS, len(self.urls))
+
+        futures = []
+        with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+            for url in self.urls:
+                future_obj = executor.submit(self.crawl, url)
+                futures.append(future_obj)
+
+        for future in concurrent.futures.as_completed(futures):
+            crawl_result = future.result()
+            self.result.append(crawl_result)
+
+
+def main():
+    spider = AvanzaSpider(urls=["https://www.avanza.se/aktier/om-aktien.html/5277/bure-equity",
+                                "https://www.avanza.se/aktier/om-aktien.html/26268/aak"],
+                          options=[LATEST_PRICE])
+    spider.run()
+
+
+if __name__ == "__main__":
+    main()

@@ -1,9 +1,9 @@
+import numpy as np
 import pandas as pd
 
-import numpy as np
-
+from StockApplications.Portfolio.Spiders.avanza_spider import AvanzaSpider
 from StockApplications.Portfolio.Spiders.ibindex_spider import IBIndexSpider
-from StockApplications.Portfolio.config import ID, STOCK, LATEST_PRICE, IBINDEX, WEIGHT, TOTAL_PRICE, AMOUNT_TO_BUY
+from StockApplications.Portfolio.config import STOCK, LATEST_PRICE, IBINDEX, WEIGHT, TOTAL_PRICE, AMOUNT_TO_BUY
 from StockApplications.Portfolio.portfolio import Portfolio
 
 
@@ -42,10 +42,30 @@ class IBIndex(Portfolio):
 
     def __init__(self, deposit):
         super().__init__(deposit, IBIndex.portfolio)
-        self.thread_manager.add_thread(IBIndexSpider())
-        spiders = self.create_avanza_spiders(crawl_options=[ID, STOCK, LATEST_PRICE])
-        self.thread_manager.add_threads(spiders)
+        index_spider = IBIndexSpider()
+        stock_spider = AvanzaSpider(self.urls, options=[STOCK, LATEST_PRICE])
+        self.thread_manager.add_thread(index_spider)
+        self.thread_manager.add_thread(stock_spider)
         self.result = pd.DataFrame(columns=[STOCK, LATEST_PRICE])
+
+    def gather_data(self):
+        self.thread_manager.start_threads()
+        self.thread_manager.join_threads()
+
+    def extract_and_sort(self):
+        """
+        Extract data from spiders and add to respective dataframe.
+        Sort DataFrame by stock name.
+        :return:
+        """
+        index_df = pd.DataFrame()
+        for spider in self.thread_manager.threads:
+            if not isinstance(spider, IBIndexSpider):
+                self.result = self.result.append(spider.result, ignore_index=True)
+            else:
+                index_df = index_df.append(spider.result)
+        self.result = self.result.sort_values(by=STOCK)
+        return index_df.sort_values(by=STOCK)
 
     def calculate(self, index_data, stocks_to_exclude):
         """
@@ -63,25 +83,6 @@ class IBIndex(Portfolio):
         self.result[AMOUNT_TO_BUY] = self.deposit * self.result[WEIGHT] / self.result[LATEST_PRICE]
         self.result[AMOUNT_TO_BUY] = self.result[AMOUNT_TO_BUY].map(lambda x: np.rint(x))
         self.result[TOTAL_PRICE] = self.result[AMOUNT_TO_BUY] * self.result[LATEST_PRICE]
-
-    def gather_data(self):
-        self.thread_manager.start_threads()
-        self.thread_manager.join_threads()
-
-    def extract_and_sort(self):
-        """
-        Extract data from spiders and add to respective dataframe.
-        Sort DataFrame by stock name.
-        :return:
-        """
-        index_df = pd.DataFrame()
-        for spider in self.thread_manager.threads:
-            if not isinstance(spider, IBIndexSpider):
-                self.result = self.result.append(spider.stock_values_list, ignore_index=True)
-            else:
-                index_df = index_df.append(spider.df)
-        self.result = self.result.sort_values(by=STOCK)
-        return index_df.sort_values(by=STOCK)
 
     def run(self, stocks_to_exclude):
         self.gather_data()
