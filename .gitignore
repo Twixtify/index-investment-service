@@ -4,3 +4,4 @@ venv/
 Portfolio/portfolio.py
 **/__pycache__/
 **/idea/
+**/.idea/
