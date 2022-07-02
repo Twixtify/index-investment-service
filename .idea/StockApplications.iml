@@ -3,8 +3,8 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/venv" />
-      <excludeFolder url="file://$MODULE_DIR$/StockApplications/Portfolio/PortfolioData/FornybarenergiData" />
-      <excludeFolder url="file://$MODULE_DIR$/StockApplications/Portfolio/PortfolioData/InvestmentbolagData" />
+      <excludeFolder url="file://$MODULE_DIR$/Portfolio/PortfolioData/FornybarenergiData" />
+      <excludeFolder url="file://$MODULE_DIR$/Portfolio/PortfolioData/InvestmentbolagData" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9 (StockApplications)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

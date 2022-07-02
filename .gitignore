@@ -1,5 +1,4 @@
-/StockApplications/Portfolio/Portfolios/__init__.py
-/StockApplications/Portfolio/PortfolioData/
+**/PortfolioData/
 **/.gitkeep
 venv/
 Portfolio/portfolio.py
