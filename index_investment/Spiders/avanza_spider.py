@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-from Portfolio.config import STOCK, BUY, SELL, LATEST_PRICE
+from index_investment.config import STOCK, BUY, SELL, LATEST_PRICE
 
 
 def get_driver(path_driver=r"C:\drivers\chromedriver.exe"):

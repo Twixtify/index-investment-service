@@ -1,8 +1,8 @@
 import os
 
-from Portfolio.Methods.calculate import Calculate
-from Portfolio.config import DATA_TO_SAVE, INDEX_VALUES, FILE_PATH, DIR_PATH
-from Portfolio.portfolio import Portfolio
+from index_investment.Methods.calculate import Calculate
+from index_investment.config import DATA_TO_SAVE, INDEX_VALUES, FILE_PATH, DIR_PATH
+from index_investment.portfolio import Portfolio
 
 
 class Fornybarenergi(Portfolio):
