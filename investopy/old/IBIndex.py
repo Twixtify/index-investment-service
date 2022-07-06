@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 
-from index_investment.old.Spiders.avanza_spider import AvanzaSpider
-from index_investment.old.Spiders.ibindex_spider import IBIndexSpider
-from index_investment.old.config import STOCK, LATEST_PRICE, IBINDEX, WEIGHT, TOTAL_PRICE, AMOUNT_TO_BUY
-from index_investment.old.portfolio import Portfolio
+from investopy.old.Spiders.avanza_spider import AvanzaSpider
+from investopy.old.Spiders.ibindex_spider import IBIndexSpider
+from investopy.old.config import STOCK, LATEST_PRICE, IBINDEX, WEIGHT, TOTAL_PRICE, AMOUNT_TO_BUY
+from investopy.old.portfolio import Portfolio
 
 
 def string_to_float(s):

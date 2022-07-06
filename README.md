@@ -1,4 +1,6 @@
-# StockApplications
+# InvestoPy
+
+Help investors invest in certain indexes.
 
 ## Portfolios
 
