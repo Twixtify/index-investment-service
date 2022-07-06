@@ -1,4 +1,4 @@
-def run(index, deposit: float) -> None:
+def main(index, deposit: float) -> None:
     return
 
 
