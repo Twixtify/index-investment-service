@@ -1,8 +1,8 @@
 import os
 
-from index_investment.Spiders.manage_threads import ManageThreads
-from index_investment.config import ENCODING
-from index_investment.config import PORTFOLIOS
+from index_investment.old.Spiders.manage_threads import ManageThreads
+from index_investment.old.config import ENCODING
+from index_investment.old.config import PORTFOLIOS
 
 
 def read_file(filename):

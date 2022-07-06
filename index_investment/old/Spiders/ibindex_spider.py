@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
-from index_investment.config import STOCK, IBINDEX
+from index_investment.old.config import STOCK, IBINDEX
 
 
 def get_driver(path_driver=r"C:\drivers\chromedriver.exe"):
