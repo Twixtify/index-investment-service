@@ -10,9 +10,9 @@ PORTFOLIO_STRATEGIES = {
 
 
 def main(portfolio: str, deposit: float) -> None:
-    _portfolio = PORTFOLIO_STRATEGIES[portfolio](deposit)
+    selected_portfolio = PORTFOLIO_STRATEGIES[portfolio](deposit)
     facade = Facade()
-    facade.analyse(_portfolio)
+    facade.analyse(selected_portfolio)
     return
 
 

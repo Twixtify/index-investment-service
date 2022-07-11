@@ -6,5 +6,5 @@ class IBIndex:
     deposit: float
 
     def survey(self) -> None:
-        # TODO: Implement survey
+        # TODO: Implement survey, receiver(s) etc
         return
