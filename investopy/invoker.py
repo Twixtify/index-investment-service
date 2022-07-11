@@ -1,9 +1,6 @@
-from dataclasses import dataclass
-
 from .portfolio import Portfolio
 
 
-@dataclass
 class PortfolioController:
     """
     Command pattern invoker.
