@@ -17,10 +17,4 @@ def main(portfolio: str, deposit: float) -> None:
 
 
 if __name__ == "__main__":
-    from scrapers.single_page_scraper import SinglePageScraper
-    from data import target
-
-    s = SinglePageScraper(target['url'], target['headers'])
-    s.run()
-    print(s.response())
     main("ibindex", 1000.0)

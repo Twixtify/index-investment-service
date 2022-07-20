@@ -2,8 +2,8 @@ import requests
 from requests.adapters import HTTPAdapter
 from requests.exceptions import ConnectionError
 
+from investopy.config import CONNECT_TIMEOUT, READ_TIMEOUT, MAX_RETRIES
 from .base_scraper import BaseScraper
-from investopy.config import CONNECT_TIMEOUT, READ_TIMEOUT, MAX_RETRIES, ENCODING
 
 
 class SinglePageScraper(BaseScraper):
@@ -28,7 +28,6 @@ class SinglePageScraper(BaseScraper):
         try:
             self._response = self._session.get(self.url)
             self._response.raise_for_status()
-            self._response.encoding = ENCODING
         except ConnectionError as ce:
             self._session.close()
             raise ce
