@@ -28,5 +28,4 @@ class IBIndexOperation:
         portfolio_data = self._portfolio_parser.parse_content(self._portfolio_scraper.response)
         stock_data = self._stock_parser.parse_content(self._stock_scraper.response)
 
-        print(portfolio_data)
-        print(stock_data)
+        # TODO: Add calculator for portfolio deposit
