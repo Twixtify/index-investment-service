@@ -16,5 +16,5 @@ class IBIndex:
     def survey(self) -> None:
         # TODO: Implement survey, receiver(s) etc
         if self.receiver is not None:
-            self.receiver.action()
+            return self.receiver.action()
         return
