@@ -124,7 +124,9 @@ class ApproxPortfolio(Calculator):
         ]].copy()
         result[self._amount_to_buy_col] = result[self._amount_to_buy_col].astype(int)
         # Print result
-        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        with pd.option_context('display.max_rows', None,
+                               'display.max_columns', None,
+                               'display.float_format', "{:,.2f}".format):
             print(result.to_string(index=False))
         print("Total price:", result[self._total_price_col].sum(), "Difference:",
               self.deposit - result[self._total_price_col].sum())
