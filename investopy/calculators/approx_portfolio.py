@@ -113,9 +113,17 @@ class ApproxPortfolio(Calculator):
         # Total price per stock
         self.data[self._total_price_col] = self.data[self._amount_to_buy_col] * self.data["Sälj"]
 
-        result = self.data[
-            [PORTFOLIO_COLUMNS[0], PORTFOLIO_COLUMNS[1], self._updated_weight_col, "Sälj", self._amount_to_buy_col,
-             self._total_price_col]]
+        # Extract result columns
+        result = self.data[[
+            PORTFOLIO_COLUMNS[0],
+            PORTFOLIO_COLUMNS[1],
+            self._updated_weight_col,
+            "Sälj",
+            self._amount_to_buy_col,
+            self._total_price_col
+        ]].copy()
+        result[self._amount_to_buy_col] = result[self._amount_to_buy_col].astype(int)
+        # Print result
         with pd.option_context('display.max_rows', None, 'display.max_columns', None):
             print(result.to_string(index=False))
         print("Total price:", result[self._total_price_col].sum(), "Difference:",
