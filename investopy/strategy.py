@@ -12,7 +12,7 @@ def ibindex_strategy(deposit: float) -> Portfolio:
     calculator = ApproxPortfolio(deposit,
                                  stocks_to_exclude=['Havsfrun Investment B',
                                                     'NAXS',
-                                                    'Traction  B',
+                                                    'Traction B',
                                                     'Öresund',
                                                     'Karolinska Development B',
                                                     'VEF']

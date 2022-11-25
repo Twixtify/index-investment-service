@@ -17,4 +17,4 @@ def main(portfolio: str, deposit: float) -> None:
 
 
 if __name__ == "__main__":
-    main("ibindex", 1000.0)
+    main("ibindex", 10000.0)
