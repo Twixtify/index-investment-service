@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from pandas import DataFrame, to_numeric
 
-from investopy.config import PORTFOLIO_COLUMNS
+from investopy.config import PORTFOLIO_COLUMNS, STOCK_COLUMNS
 from .calculator import Calculator
 
 
@@ -108,17 +108,17 @@ class ApproxPortfolio(Calculator):
         self.data[self._updated_weight_col] = self.data[PORTFOLIO_COLUMNS[1]].map(lambda x: x + to_add)
         # Calculate how much of each stock to buy
         self.data[self._amount_to_buy_col] = self.deposit * 0.01 * self.data[self._updated_weight_col] / self.data[
-            "Sälj"]
+            STOCK_COLUMNS[1]]
         self.data[self._amount_to_buy_col] = self.data[self._amount_to_buy_col].map(lambda x: np.rint(x))
         # Total price per stock
-        self.data[self._total_price_col] = self.data[self._amount_to_buy_col] * self.data["Sälj"]
+        self.data[self._total_price_col] = self.data[self._amount_to_buy_col] * self.data[STOCK_COLUMNS[1]]
 
         # Extract result columns
         result = self.data[[
             PORTFOLIO_COLUMNS[0],
             PORTFOLIO_COLUMNS[1],
             self._updated_weight_col,
-            "Sälj",
+            STOCK_COLUMNS[1],
             self._amount_to_buy_col,
             self._total_price_col
         ]].copy()

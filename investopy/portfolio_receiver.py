@@ -3,9 +3,9 @@ from dataclasses import dataclass
 
 from calculators.calculator import Calculator
 from config import MAX_THREADS
-from data import ibindex, privataffarer
+from data import ibindex, ibindex_stocks
 from parsers.portfolio_parsers import IBIndex
-from parsers.stock_parsers import PrivataAffarer
+from parsers.stock_parsers import IBIndexStocks
 from scrapers.single_page_scraper import SinglePageScraper
 
 
@@ -13,9 +13,9 @@ from scrapers.single_page_scraper import SinglePageScraper
 class IBIndexOperation:
     """A receiver to carry out a specific portfolio operation"""
     _portfolio_scraper = SinglePageScraper(ibindex['url'], ibindex['headers'])
-    _stock_scraper = SinglePageScraper(privataffarer['url'], privataffarer['headers'])
+    _stock_scraper = SinglePageScraper(ibindex_stocks['url'], ibindex_stocks['headers'])
     _portfolio_parser = IBIndex()
-    _stock_parser = PrivataAffarer()
+    _stock_parser = IBIndexStocks()
     calculator: Calculator
 
     def action(self):

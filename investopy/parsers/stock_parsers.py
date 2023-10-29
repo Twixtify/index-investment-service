@@ -1,7 +1,9 @@
+import ast
+
 from bs4 import BeautifulSoup
 from pandas import DataFrame
 
-from investopy.config import HTML_PARSER
+from investopy.config import HTML_PARSER, STOCK_COLUMNS
 from .base_parser import BaseParser
 
 
@@ -36,3 +38,13 @@ class PrivataAffarer(BaseParser):
         for header in table_headers:
             title.append(header['data-field'])
         return title
+
+class IBIndexStocks(BaseParser):
+    def parse_content(self, html: str) -> DataFrame:
+        products = ast.literal_eval(html)
+        df_rows = []
+        for product in products:
+            stock = product['productName']
+            weight = product['price']
+            df_rows.append({STOCK_COLUMNS[0]: stock, STOCK_COLUMNS[1]: weight})
+        return DataFrame(df_rows, columns=STOCK_COLUMNS)

@@ -10,3 +10,4 @@ MAX_THREADS = 5
 # ------ Web parser settings ------
 HTML_PARSER = "html.parser"
 PORTFOLIO_COLUMNS = ['Aktie', 'Viktning (%)']
+STOCK_COLUMNS = ['Aktie', 'Köp (sek)']
