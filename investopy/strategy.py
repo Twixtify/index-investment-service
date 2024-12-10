@@ -15,7 +15,9 @@ def ibindex_strategy(deposit: float) -> Portfolio:
                                                     'Traction B',
                                                     'Öresund',
                                                     'Karolinska Development B',
-                                                    'VEF']
+                                                    'VEF',
+                                                    'Fastator',
+                                                    'VNV Global']
                                  )
     receiver = IBIndexOperation(calculator)
     return IBIndex(deposit, receiver)
