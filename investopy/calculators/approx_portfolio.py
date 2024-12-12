@@ -131,3 +131,65 @@ class ApproxPortfolio(Calculator):
         print("Total price:", result[self._total_price_col].sum(), "Difference:",
               self.deposit - result[self._total_price_col].sum())
         return result
+
+
+@dataclass
+class MinPortfolio(Calculator):
+    deposit: Optional[float]  # Not important
+    stocks_to_exclude: Optional[list[str]] = None
+    data: Optional[DataFrame] = None
+    _updated_weight_col = "Ny viktning (%)"
+    _amount_to_buy_col = "Antal att köpa"
+    _total_price_col = "Totalt pris"
+
+    def prepare_data(self, stocks: DataFrame, portfolio: DataFrame) -> None:
+        # Remove NaN
+        stocks.dropna()
+        portfolio.dropna()
+        # Replace comma with dot
+        stocks = stocks.apply(lambda x: x.astype(str).str.replace(',', '.'))
+        portfolio = portfolio.apply(lambda x: x.astype(str).str.replace(',', '.'))
+        # Strip strings
+        stocks = stocks.apply(lambda x: x.str.strip())
+        portfolio = portfolio.apply(lambda x: x.str.strip())
+
+        # Find common columns
+        stocks_col = stocks.columns
+        portfolio_col = portfolio.columns
+        intersecting_col = stocks_col.intersection(portfolio_col)
+        to_merge = intersecting_col.to_list()
+
+        print(f"Performing merge on {to_merge}")
+        unified_column = unify(portfolio, stocks, to_merge[0])
+        stocks.replace(to_replace=dict(unified_column), value=None, regex=True, inplace=True)
+
+        # Save result to data variable
+        self.data = portfolio.merge(stocks, how="left", on=to_merge[0])
+        self.data = self.data.apply(to_numeric, errors='ignore')
+
+        # Remove stocks and add their average weight to remaining stocks
+        if self.stocks_to_exclude is not None:
+            self._remove_stocks_to_exclude()
+
+    def run(self):
+        pass
+
+    def _remove_stocks_to_exclude(self):
+        # Ensure excluded stocks are removed
+        unified_name_tags = unify(self.data,
+                                  DataFrame(self.stocks_to_exclude, columns=[PORTFOLIO_COLUMNS[0]]),
+                                  PORTFOLIO_COLUMNS[0])
+        self.data.replace(to_replace=dict(unified_name_tags), value=None, regex=True, inplace=True)
+        excluding_stocks = self.data.loc[self.data[PORTFOLIO_COLUMNS[0]].isin(self.stocks_to_exclude)]
+
+        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            print("Excluding: \n", excluding_stocks.to_string(index=False))
+        excluding_arr = excluding_stocks[PORTFOLIO_COLUMNS[1]].to_numpy()
+        # Average weight to add on remaining values
+        to_add = np.sum(excluding_arr) / (len(self.data) - len(excluding_stocks))
+        print("Average weight to add from excluded stocks: ", to_add)
+
+        # Drop values from data
+        self.data.drop(index=excluding_stocks.index, inplace=True)
+        # Add average weight
+        self.data[self._updated_weight_col] = self.data[PORTFOLIO_COLUMNS[1]].map(lambda x: x + to_add)
