@@ -1,15 +1,15 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from investopy.algorithms.genetic.stock_gene import StockGene
+from gene import StockGene
 
 
 @dataclass
-class StocksChromosome:
+class StockChromosome:
     stocks: list[StockGene]
     fitness: Optional[float]
 
-    def cal_fitness(self):
+    def fitness(self):
         """
         Calculate the fitness of this candidate solution.
             # Total price: P += n * s, where n is the amount and s the stock price.
