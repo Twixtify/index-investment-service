@@ -5,7 +5,7 @@ T = TypeVar("T", bound=int | float)
 S = TypeVar("S", bound=int | float | str)
 
 
-class Mutation(Protocol):
+class Mutation(ABC):
     """
     Define a mutation protocol.
 
@@ -13,6 +13,7 @@ class Mutation(Protocol):
     This process is used to maintain and introduce diversity in the population.
     """
 
+    @abstractmethod
     def mutate(self, *args) -> None:
         """
         Call upon this method to potentially mutate individuals in the population.
@@ -26,7 +27,7 @@ class Mutation(Protocol):
         ...
 
 
-class Gene(Protocol):
+class Gene(ABC):
     """
     Define a gene protocol for chromosomes.
 
@@ -37,18 +38,20 @@ class Gene(Protocol):
     encoded_individual_order=[2, 4, 1, 7]
     """
 
-    def encoding(self) -> S:
+    @abstractmethod
+    def encoding(self, *args) -> S:
         """
         Return the encoded value of this gene.
         """
         ...
 
 
-class Terminate(Protocol):
+class Terminate(ABC):
     """
     Define the termination protocol of the population.
     """
 
+    @abstractmethod
     def termination(self, *args, **kwargs) -> bool:
         """
         Determine if the population should stop evolving.
@@ -64,7 +67,7 @@ class Terminate(Protocol):
         ...
 
 
-class Chromosome(Protocol):
+class Chromosome(ABC):
     """
     Define a chromosome protocol of the population.
 
@@ -87,7 +90,7 @@ class Chromosome(Protocol):
         self.fitness = fitness
 
 
-class Reproduction(Protocol):
+class Reproduction(ABC):
     """
     Define the protocol for generating children (crossover).
 
@@ -99,6 +102,7 @@ class Reproduction(Protocol):
     tail after this point between them.
     """
 
+    @abstractmethod
     def breed(self, parents: Iterable[Chromosome], *args) -> Iterable[Chromosome]:
         """
         Parents breed, also known as the chromosomes undergo crossover, to produce new individuals (children).
@@ -106,13 +110,14 @@ class Reproduction(Protocol):
         ...
 
 
-class Selection(Protocol):
+class Selection(ABC):
     """
     Selection is the process of selecting parents to generate the children of the next generation.
     The idea is that those individuals who are not selected will unfortunately succumb to the challenges of this generation,
     i.e. they will not survive to the next generation.
     """
 
+    @abstractmethod
     def get_survivors(self, population: Iterable[Chromosome]) -> Iterable[Chromosome]:
         """
         Retrieve surviving chromosomes using their fitness.
@@ -131,7 +136,7 @@ class Selection(Protocol):
 class ObjectiveFunction(ABC):
 
     @abstractmethod
-    def fitness(self, chromosome: Iterable[Gene]) -> T:
+    def fitness(self, *args, **kwargs) -> T:
         """
         Calculate the fitness of a candidate solution or chromosome.
         """
