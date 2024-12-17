@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import Protocol, TypeVar, Any, Iterable, Optional
+from collections.abc import Sequence
+from typing import Protocol, TypeVar, Any, Iterable, Optional, Collection
 
 T = TypeVar("T", bound=int | float)
 S = TypeVar("S", bound=int | float | str)
@@ -24,7 +25,7 @@ class Mutation(ABC):
         3) Scramble: Choose a random length segment and interchange genes in this segment.
         4) Inversion: Choose a random length segment and reverse the order of genes in it.
         """
-        ...
+        raise NotImplementedError()
 
 
 class Gene(ABC):
@@ -43,7 +44,7 @@ class Gene(ABC):
         """
         Return the encoded value of this gene.
         """
-        ...
+        raise NotImplementedError()
 
 
 class Terminate(ABC):
@@ -64,7 +65,7 @@ class Terminate(ABC):
         comparison to some predefined metric.
         5) Time stagnation, the average fitness of the population does not change within a certain amount of time.
         """
-        ...
+        raise NotImplementedError()
 
 
 class Chromosome(ABC):
@@ -107,7 +108,7 @@ class Reproduction(ABC):
         """
         Parents breed, also known as the chromosomes undergo crossover, to produce new individuals (children).
         """
-        ...
+        raise NotImplementedError()
 
 
 class Selection(ABC):
@@ -118,7 +119,7 @@ class Selection(ABC):
     """
 
     @abstractmethod
-    def get_survivors(self, population: Iterable[Chromosome]) -> Iterable[Chromosome]:
+    def get_survivors(self, population: Sequence[Chromosome]) -> Sequence[Chromosome]:
         """
         Retrieve surviving chromosomes using their fitness.
 
@@ -130,17 +131,18 @@ class Selection(ABC):
         5) Select worst.
         6) Select best.
         """
-        ...
+        raise NotImplementedError()
 
 
 class ObjectiveFunction(ABC):
 
+    @property
     @abstractmethod
     def fitness(self, *args, **kwargs) -> T:
         """
         Calculate the fitness of a candidate solution or chromosome.
         """
-        ...
+        raise NotImplementedError()
 
 
 class Population(Protocol):
@@ -165,5 +167,4 @@ class Population(Protocol):
         4. Mutate candidates.
         5. Evaluate termination condition.
         """
-        ...
-
+        raise NotImplementedError()
