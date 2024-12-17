@@ -17,10 +17,15 @@ class SUS(Selection):
     "https://en.wikipedia.org/wiki/Stochastic_universal_sampling"
     """
 
-    def get_survivors(self, population: Sequence[Chromosome], size: int) -> Sequence[Chromosome]:
+    def __init__(self, size: int):
+        """
+        :param size: number of survivors
+        """
+        self.size = size
+
+    def get_survivors(self, population: Sequence[Chromosome]) -> Sequence[Chromosome]:
         """
         :param population: List of fitness values for the population
-        :param size: number of survivors
         :return: the 'size' number of survivors
         """
         # Create list of (index, fitness) pairs
@@ -32,11 +37,11 @@ class SUS(Selection):
         # Normalize fitness (i.e map fitness values to the interval [0, 1])
         idx_fitness[:] = [tuple([tup[0], tup[1] / total_fitness]) for tup in idx_fitness]
         # Distance between the pointers to create
-        distance = 1 / size
+        distance = 1 / self.size
         # Initial pointer start
         start = random.uniform(0, distance)
         # Pointers
-        pointers = [start + i * distance for i in range(size)]
+        pointers = [start + i * distance for i in range(self.size)]
 
         # Perform selection
         survivors = []
@@ -50,7 +55,9 @@ class SUS(Selection):
             survivors.append(idx_fitness[i][0])
         return [population[survivor] for survivor in survivors]
 
-# if __name__ == "__main__":
+
+if __name__ == "__main__":
+    s = SUS(2)
 #     list1 = [1,0,2,3,0,0,0]
 #     result = [tuple([index, val]) for index, val in enumerate(list1)]
 #     idx, val = *result
