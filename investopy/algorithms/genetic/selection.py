@@ -1,3 +1,4 @@
+import logging
 import random
 from collections.abc import Sequence
 
@@ -56,27 +57,53 @@ class SUS(Selection):
         return [population[survivor] for survivor in survivors]
 
 
+class Sort(Selection):
+    def __init__(self, size: int, descending=True):
+        """
+        :param size: How many sorted individuals to retrieve from population
+        :param descending: Boolean for sorting individuals by descending fitness value
+        """
+        self.size = size
+        self.descending = descending
+
+    def get_survivors(self, population: Sequence[Chromosome]) -> Sequence[Chromosome]:
+        """
+        Return a subsequence of the population in descending [from highest to lowest] or ascending [lowest to highest]
+        order based on the individuals respective fitness value.
+
+        :param population: the population of individuals
+        :return: A slice of the population sorted by fitness in descending or ascending order
+        """
+        if self.size > len(population):
+            logging.warning("Cannot create a sorted sequence longer than the population")
+            return []
+        return sorted(population, key=lambda chromosome: chromosome.fitness, reverse=self.descending)[:self.size]
+
+
 if __name__ == "__main__":
     from investopy.algorithms.genetic.gene import StockGene
     from investopy.algorithms.genetic.chromosome import StockChromosome
     from investopy.algorithms.genetic.objective_function import IndexWeight
 
     func = IndexWeight()
-    sg1 = StockGene(name="sg1", price=1, amount=1, weight=0)
-    sg2 = StockGene(name="sg2", price=1, amount=1, weight=0)
-    sg3 = StockGene(name="sg3", price=1, amount=1, weight=0)
-    sg4 = StockGene(name="sg4", price=1, amount=1, weight=0)
+    sg1 = StockGene(name="sg1", price=1, amount=1, weight=0.0)
+    sg2 = StockGene(name="sg2", price=1, amount=1, weight=0.0)
+    sg3 = StockGene(name="sg3", price=1, amount=1, weight=0.0)
+    sg4 = StockGene(name="sg4", price=1, amount=1, weight=0.0)
     individual1 = StockChromosome(genes=[sg1])
     individual1.fitness = func.fitness(individual1)
     individual2 = StockChromosome(genes=[sg2])
     individual2.fitness = func.fitness(individual2)
-    # individual3 = StockChromosome(genes=[sg3])
-    # individual3.fitness = func.fitness(individual3)
-    # individual4 = StockChromosome(genes=[sg4])
-    # individual4.fitness = func.fitness(individual4)
-    sus = SUS(1)
-    result = sus.get_survivors([individual1, individual2])
-    [print(c) for c in result]
+    individual3 = StockChromosome(genes=[sg3])
+    individual3.fitness = func.fitness(individual3)
+    individual4 = StockChromosome(genes=[sg4])
+    individual4.fitness = func.fitness(individual4)
+    sus = SUS(2)
+    sort = Sort(2)
+    result = sus.get_survivors([individual1, individual2, individual3, individual4])
+    result2 = sort.get_survivors([individual1, individual2, individual3, individual4])
+    [print("SUS: ", c) for c in result]
+    [print("Sort: ", c) for c in result2]
 #     list1 = [1,0,2,3,0,0,0]
 #     result = [tuple([index, val]) for index, val in enumerate(list1)]
 #     idx, val = *result

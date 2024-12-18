@@ -1,8 +1,7 @@
 import logging
 import random
-from collections.abc import Sequence, Iterable
-from itertools import zip_longest, batched
-from typing import Any
+from collections.abc import Sequence
+from itertools import batched
 
 from definitions import Recombination
 from investopy.algorithms.genetic.definitions import Chromosome
@@ -33,7 +32,7 @@ class RandomPairing(Recombination):
 
 
 class GroupByNeighbour(Recombination):
-    def __init__(self, size = 2):
+    def __init__(self, size=2):
         """
         :param size: Size of grouping pairs
         """
