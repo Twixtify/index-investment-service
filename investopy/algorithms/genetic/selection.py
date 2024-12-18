@@ -57,7 +57,26 @@ class SUS(Selection):
 
 
 if __name__ == "__main__":
-    s = SUS(2)
+    from investopy.algorithms.genetic.gene import StockGene
+    from investopy.algorithms.genetic.chromosome import StockChromosome
+    from investopy.algorithms.genetic.objective_function import IndexWeight
+
+    func = IndexWeight()
+    sg1 = StockGene(name="sg1", price=1, amount=1, weight=0)
+    sg2 = StockGene(name="sg2", price=1, amount=1, weight=0)
+    sg3 = StockGene(name="sg3", price=1, amount=1, weight=0)
+    sg4 = StockGene(name="sg4", price=1, amount=1, weight=0)
+    individual1 = StockChromosome(genes=[sg1])
+    individual1.fitness = func.fitness(individual1)
+    individual2 = StockChromosome(genes=[sg2])
+    individual2.fitness = func.fitness(individual2)
+    # individual3 = StockChromosome(genes=[sg3])
+    # individual3.fitness = func.fitness(individual3)
+    # individual4 = StockChromosome(genes=[sg4])
+    # individual4.fitness = func.fitness(individual4)
+    sus = SUS(1)
+    result = sus.get_survivors([individual1, individual2])
+    [print(c) for c in result]
 #     list1 = [1,0,2,3,0,0,0]
 #     result = [tuple([index, val]) for index, val in enumerate(list1)]
 #     idx, val = *result

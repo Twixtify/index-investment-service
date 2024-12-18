@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import Protocol, TypeVar, Any, Iterable, Optional, Collection
+from typing import Protocol, TypeVar, Any, Iterable, Optional
 
 T = TypeVar("T", bound=int | float)
 S = TypeVar("S", bound=int | float | str)
@@ -78,7 +78,7 @@ class Chromosome(ABC):
     The fitness for each chromosome represent the quality of this chromosome.
     """
     genes: Iterable[Gene]
-    fitness: Optional[T]
+    fitness: T = None
 
     def set_fitness(self, fitness: T) -> None:
         """
@@ -104,7 +104,7 @@ class Reproduction(ABC):
     """
 
     @abstractmethod
-    def breed(self, parents: Iterable[Chromosome], *args) -> Iterable[Chromosome]:
+    def breed(self, parents: Iterable[Chromosome], children: int) -> Iterable[Chromosome]:
         """
         Parents breed, also known as the chromosomes undergo crossover, to produce new individuals (children).
         """
@@ -130,6 +130,15 @@ class Selection(ABC):
         4) Randomly select.
         5) Select worst.
         6) Select best.
+        """
+        raise NotImplementedError()
+
+class Recombination(ABC):
+
+    @abstractmethod
+    def pair(self, parents: Sequence[Chromosome]) -> Sequence[Chromosome]:
+        """
+        Pair parents from a selection step to be passed on to the reproduction step.
         """
         raise NotImplementedError()
 

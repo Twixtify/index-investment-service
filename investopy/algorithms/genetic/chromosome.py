@@ -8,4 +8,4 @@ from investopy.algorithms.genetic.definitions import Chromosome
 @dataclass
 class StockChromosome(Chromosome):
     genes: Iterable[StockGene]
-    fitness: Optional[float]
+    fitness: Optional[float] = None
