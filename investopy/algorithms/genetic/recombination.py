@@ -43,6 +43,8 @@ class GroupByNeighbour(Recombination):
         Create non-overlapping pairs from the sequence of parents.
         If the number of parents are not divisible by self.size an empty list is returned.
 
+        # batched('ABCDEFG', 3) → ABC DEF G
+
         :param parents: Parents to pair.
         :return: tuples of parents.
         """
