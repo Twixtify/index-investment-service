@@ -151,13 +151,13 @@ class ObjectiveFunction(ABC):
         raise NotImplementedError()
 
 
-class Terminate(ABC):
+class Termination(ABC):
     """
     Define the termination protocol of the population.
     """
 
     @abstractmethod
-    def termination(self) -> bool:
+    def terminate(self) -> bool:
         """
         Determine if the population should stop evolving.
 
@@ -177,7 +177,7 @@ class Population(Protocol):
     General protocol of a population.
     """
     population: Optional[Iterable[Chromosome]]
-    termination: Terminate
+    termination: Termination
     selection: Selection
     objective: ObjectiveFunction
     mutation: Mutation
