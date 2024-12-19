@@ -15,6 +15,6 @@ class IndexWeight(ObjectiveFunction):
         Get the fitness of this candidate solution.
         """
         # The total price of this chromosome with stocks
-        total_price = sum([gene.amount * gene.price for gene in chromosome.genes])
+        total_price = sum([gene.parameter * gene.price for gene in chromosome.genes])
         # sum of x_i*x_i were x_i = stock amount * stock price / total price - stock weight
         return sum([gene.encoding(total_price) * gene.encoding(total_price) for gene in chromosome.genes])

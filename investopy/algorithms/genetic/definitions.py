@@ -41,14 +41,14 @@ class Gene(ABC):
 
     @property
     @abstractmethod
-    def gene(self):
-        """The gene or variable this gene represents"""
+    def parameter(self):
+        """The parameter the genetic algorithm is fitting to."""
         raise NotImplementedError()
 
-    @gene.setter
+    @parameter.setter
     @abstractmethod
-    def gene(self, gene: S) -> None:
-        """Setter for the gene"""
+    def parameter(self, parameter: S) -> None:
+        """Setter for the parameter"""
         raise NotImplementedError()
 
     @abstractmethod

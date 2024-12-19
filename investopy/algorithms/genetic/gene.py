@@ -11,13 +11,13 @@ class StockGene(Gene):
     amount: int
 
     @property
-    def gene(self) -> int:
+    def parameter(self) -> int:
         """The amount of this stock to buy"""
         return self.amount
 
-    @gene.setter
-    def gene(self, gene) -> None:
-        self.amount = gene
+    @parameter.setter
+    def parameter(self, parameter) -> None:
+        self.amount = parameter
 
     def encoding(self, total_price_solution: float) -> float:
         if total_price_solution != 0:
