@@ -30,7 +30,7 @@ class Mutation(ABC):
 
 class Gene(ABC):
     """
-    Define a gene protocol for chromosomes.
+    Define a gene for a chromosome.
 
     Genes are encoded parameters. Encoding strategies like binary-, float- or order values are common use cases.
     For example:
@@ -38,6 +38,18 @@ class Gene(ABC):
     encoded_individual_float=[0.34, 4.241, 51.123, 0.4567]
     encoded_individual_order=[2, 4, 1, 7]
     """
+
+    @property
+    @abstractmethod
+    def gene(self):
+        """The gene or variable this gene represents"""
+        raise NotImplementedError()
+
+    @gene.setter
+    @abstractmethod
+    def gene(self, gene: S) -> None:
+        """Setter for the gene"""
+        raise NotImplementedError()
 
     @abstractmethod
     def encoding(self, *args) -> S:
@@ -77,10 +89,15 @@ class Chromosome(ABC):
     These genes are encoded parameters. Encoding strategies are for example binary-, float- or order values.
     The fitness for each chromosome represent the quality of this chromosome.
     """
-    genes: Iterable[Gene]
-    fitness: T = None
+    genes: Sequence[Gene]
 
-    def set_fitness(self, fitness: T) -> None:
+    @property
+    @abstractmethod
+    def fitness(self) -> T:
+        raise NotImplementedError()
+
+    @fitness.setter
+    def fitness(self, fitness: T) -> None:
         """
         Update fitness of this chromosome.
 
@@ -88,7 +105,7 @@ class Chromosome(ABC):
         The population defines the problem we want to solve.
         Therefore, the fitness is determined by the Population and not the individual chromosome.
         """
-        self.fitness = fitness
+        raise NotImplementedError()
 
 
 class Reproduction(ABC):
@@ -104,7 +121,7 @@ class Reproduction(ABC):
     """
 
     @abstractmethod
-    def breed(self, parents: Iterable[Chromosome], children: int) -> Iterable[Chromosome]:
+    def breed(self, parents: Sequence[Chromosome]) -> Sequence[Chromosome]:
         """
         Parents breed, also known as the chromosomes undergo crossover, to produce new individuals (children).
         """
@@ -132,6 +149,7 @@ class Selection(ABC):
         6) Select best.
         """
         raise NotImplementedError()
+
 
 class Recombination(ABC):
 
