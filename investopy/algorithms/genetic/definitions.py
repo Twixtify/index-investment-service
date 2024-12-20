@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from typing import Protocol, TypeVar, Any, Iterable, Optional
+from dataclasses import dataclass
+from typing import Protocol, TypeVar, Iterable
 
 T = TypeVar("T", bound=int | float)
 S = TypeVar("S", bound=int | float | str)
@@ -142,9 +143,8 @@ class Mutation(ABC):
 
 class ObjectiveFunction(ABC):
 
-    @property
     @abstractmethod
-    def fitness(self, *args, **kwargs) -> T:
+    def fitness(self) -> T:
         """
         Calculate the fitness of a candidate solution or chromosome.
         """
@@ -172,18 +172,23 @@ class Termination(ABC):
         raise NotImplementedError()
 
 
+@dataclass
 class Population(Protocol):
     """
     General protocol of a population.
-    """
-    population: Optional[Iterable[Chromosome]]
-    termination: Termination
-    selection: Selection
-    objective: ObjectiveFunction
-    mutation: Mutation
-    reproduction: Reproduction
 
-    def evolve(self, *args, **kwargs) -> Any:
+    Returns the fittest individual after the termination condition is met.
+    """
+    gene: Gene
+    chromosome: Chromosome
+    selection: Selection
+    recombination: Recombination
+    reproduction: Reproduction
+    mutation: Mutation
+    objective: ObjectiveFunction
+    termination: Termination
+
+    def evolve(self) -> Iterable[Chromosome]:
         """
         Main method of the Genetic Algorithm.
 
@@ -194,4 +199,8 @@ class Population(Protocol):
         4. Mutate candidates.
         5. Evaluate termination condition.
         """
+        raise NotImplementedError()
+
+    def get_initial_population(self):
+        """Create the initial population"""
         raise NotImplementedError()
