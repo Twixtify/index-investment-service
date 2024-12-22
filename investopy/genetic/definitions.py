@@ -91,7 +91,7 @@ class Selection(ABC):
 class Recombination(ABC):
 
     @abstractmethod
-    def pair(self, parents: Sequence[Chromosome]) -> Sequence[Chromosome]:
+    def pair(self, parents: Sequence[Chromosome]) -> Sequence[Sequence[Chromosome]]:
         """
         Pair parents from a selection step to be passed on to the reproduction step.
         """

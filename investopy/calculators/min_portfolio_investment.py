@@ -12,7 +12,7 @@ from investopy.genetic.mutation import Scramble
 from investopy.genetic.objective_function import IndexWeight
 from investopy.genetic.population import StockPopulation
 from investopy.genetic.recombination import GroupByNeighbour
-from investopy.genetic.reproduction import Uniform
+from investopy.genetic.reproduction import RandomPick
 from investopy.genetic.selection import SUS
 from investopy.genetic.termination import Stagnation
 from .calculator import Calculator
@@ -136,12 +136,17 @@ class MinPortfolio(Calculator):
         self.data[self._updated_weight_col] = self.data[PORTFOLIO_COLUMNS[1]].map(lambda x: x + to_add)
 
     def prepare_algorithm(self) -> StockPopulation:
-        size = 100
-        genome = [StockGene(row[0], row[2], row[1] / 100) for index, row in self.data.iterrows()]
-        selection = SUS(20)
+        # Custom parameters
+        size_survivors = 20
+        # Population parameters
+        size = 200
+        # Divide by 100 because weight is in %
+        genome = [StockGene(row.iloc[0], row.iloc[2], row.iloc[1] / 100) for index, row in self.data.iterrows()]
+        selection = SUS(size_survivors)
         recombination = GroupByNeighbour()
-        reproduction = Uniform()
-        mutation = Scramble(mut_prob=0.05)
+        # Children per pair should add up to size-size_survivors
+        reproduction = RandomPick(children=int(size / size_survivors))
+        mutation = Scramble(mut_prob=0.05, scramble_size=5)
         objective = IndexWeight()
         termination = Stagnation(stagnation_threshold=0.01, stagnation_limit=5)
         return StockPopulation(size, genome, selection, recombination, reproduction, mutation, objective, termination)

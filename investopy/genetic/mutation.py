@@ -8,10 +8,11 @@ from .definitions import Mutation, Chromosome
 @dataclass
 class UniformStepMutation(Mutation):
     mut_prob: float
+    step: int
     min_threshold: int = None
     max_threshold: int = None
 
-    def mutate(self, chromosome: Chromosome, step: int) -> None:
+    def mutate(self, chromosome: Chromosome) -> None:
         """
         Mutate an integer by picking a random integer in an interval [-step, step] around the gene parameter value.
         """
@@ -20,7 +21,7 @@ class UniformStepMutation(Mutation):
             return None
         for i, gene in enumerate(chromosome.genes):
             if random.random() <= self.mut_prob:
-                gene.parameter += random.randint(-step, step)
+                gene.parameter += random.randint(-self.step, self.step)
                 # Set gene parameter to threshold if it exists
                 if self.min_threshold is not None and gene.parameter < self.min_threshold:
                     gene.parameter = self.min_threshold
@@ -38,16 +39,18 @@ class Scramble(Mutation):
 
     Args:
         mut_prob (float): mutation probability
+        scramble_size (int): number of genes in the genome to shuffle
     """
     mut_prob: float
+    scramble_size: int
 
-    def mutate(self, chromosome: Chromosome, scramble_size: int) -> None:
+    def mutate(self, chromosome: Chromosome) -> None:
         """Mutate the chromosome"""
         # Check if mutation should occur
         if random.random() > self.mut_prob:
             return None
         # Make sure scramble size does not exceed genome
-        scramble_size = min(len(chromosome.genes), scramble_size)
+        scramble_size = min(len(chromosome.genes), self.scramble_size)
         # Randomly select indices to scramble
         indices = random.sample(range(len(chromosome.genes)), scramble_size)
         # Extract gene parameters corresponding to indices
@@ -73,7 +76,7 @@ if __name__ == "__main__":
     individual1.fitness = func.fitness(individual1)
 
     uformstep = UniformStepMutation(0.5, min_threshold=0)
-    scramble = Scramble(1)
+    scramble = Scramble(1, 2)
 
     # uformstep.mutate(individual1, 10)
     scramble.mutate(individual1, 7)

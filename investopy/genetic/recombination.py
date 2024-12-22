@@ -3,8 +3,7 @@ import random
 from collections.abc import Sequence
 from itertools import batched
 
-from investopy.genetic.definitions import Chromosome
-from .definitions import Recombination
+from investopy.genetic.definitions import Chromosome, Recombination
 
 
 class RandomPairing(Recombination):
@@ -23,12 +22,14 @@ class RandomPairing(Recombination):
         self.pairings = pairings
         self.pairing_size = pairing_size
 
-    def pair(self, parents: Sequence[Chromosome]) -> Sequence[Chromosome]:
+    def pair(self, parents: Sequence[Chromosome]) -> Sequence[Sequence[Chromosome]]:
         if len(parents) < self.pairing_size:
             logging.warning("Pairing size must be smaller or equal to the number of parents")
             return []
+        pairs = []
         for i in range(self.pairings):
-            yield random.sample(parents, self.pairing_size)
+            pairs.append(random.sample(parents, self.pairing_size))
+        return pairs
 
 
 class GroupByNeighbour(Recombination):
@@ -38,7 +39,7 @@ class GroupByNeighbour(Recombination):
         """
         self.size = size
 
-    def pair(self, parents: Sequence[Chromosome]) -> Sequence[Chromosome]:
+    def pair(self, parents: Sequence[Chromosome]) -> Sequence[Sequence[Chromosome]]:
         """
         Create non-overlapping pairs from the sequence of parents.
         If the number of parents are not divisible by self.size an empty list is returned.
@@ -53,8 +54,10 @@ class GroupByNeighbour(Recombination):
             logging.warning("Cannot group parents into groups of size %s evenly", self.size)
             return []
         # Return non-overlapping pairs
+        pairs = []
         for batch in batched(parents, self.size):
-            yield list(batch)
+            pairs.append(list(batch))
+        return pairs
 
 
 if __name__ == "__main__":
@@ -77,7 +80,7 @@ if __name__ == "__main__":
     individual4.fitness = func.fitness(individual4)
 
     rp = RandomPairing(pairings=2, pairing_size=2)
-    gn = GroupByNeighbour(1)
+    gn = GroupByNeighbour(2)
 
     result = rp.pair([individual1, individual2, individual3, individual4])
     result2 = gn.pair([individual1, individual2, individual3, individual4])
