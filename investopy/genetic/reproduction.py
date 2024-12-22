@@ -3,7 +3,7 @@ import random
 from collections.abc import Sequence
 from copy import deepcopy
 
-from definitions import Reproduction, Chromosome
+from .definitions import Reproduction, Chromosome
 
 
 class RandomPick(Reproduction):
@@ -103,9 +103,9 @@ class Uniform(Reproduction):
 
 
 if __name__ == "__main__":
-    from investopy.algorithms.genetic.gene import StockGene
-    from investopy.algorithms.genetic.chromosome import StockChromosome
-    from investopy.algorithms.genetic.objective_function import IndexWeight
+    from investopy.genetic.gene import StockGene
+    from investopy.genetic.chromosome import StockChromosome
+    from investopy.genetic.objective_function import IndexWeight
 
     func = IndexWeight()
     sg1 = StockGene(name="1", price=1, amount=1, weight=0)

@@ -1,5 +1,5 @@
-from investopy.algorithms.genetic.chromosome import StockChromosome
-from investopy.algorithms.genetic.definitions import ObjectiveFunction, T
+from investopy.genetic.chromosome import StockChromosome
+from investopy.genetic.definitions import ObjectiveFunction, T
 
 
 class IndexWeight(ObjectiveFunction):

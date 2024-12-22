@@ -3,7 +3,7 @@ import time
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from definitions import Chromosome, Termination, T
+from .definitions import Chromosome, Termination, T
 
 
 @dataclass

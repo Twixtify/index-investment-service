@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from definitions import Gene
+from .definitions import Gene
 
 
 @dataclass

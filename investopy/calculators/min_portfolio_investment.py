@@ -7,16 +7,15 @@ import pandas as pd
 from pandas import DataFrame, to_numeric
 
 from investopy.config import PORTFOLIO_COLUMNS
+from investopy.genetic.gene import StockGene
+from investopy.genetic.mutation import Scramble
+from investopy.genetic.objective_function import IndexWeight
+from investopy.genetic.population import StockPopulation
+from investopy.genetic.recombination import GroupByNeighbour
+from investopy.genetic.reproduction import Uniform
+from investopy.genetic.selection import SUS
+from investopy.genetic.termination import Stagnation
 from .calculator import Calculator
-from ..algorithms.genetic.definitions import Population
-from ..algorithms.genetic.gene import StockGene
-from ..algorithms.genetic.mutation import Scramble
-from ..algorithms.genetic.objective_function import IndexWeight
-from ..algorithms.genetic.population import StockPopulation
-from ..algorithms.genetic.recombination import GroupByNeighbour
-from ..algorithms.genetic.reproduction import Uniform
-from ..algorithms.genetic.selection import SUS
-from ..algorithms.genetic.termination import Stagnation
 
 
 def is_match(s1: str, s2: str) -> bool:
@@ -74,7 +73,7 @@ class MinPortfolio(Calculator):
 
     def run(self):
         population = self.prepare_algorithm()
-        result = population.evolve()
+        result = population.evolve(gene_lower_limit=1, gene_upper_limit=100)
         print(result[0])
         # Extract result columns
         # result = self.data[[
@@ -136,10 +135,9 @@ class MinPortfolio(Calculator):
         # Add average weight
         self.data[self._updated_weight_col] = self.data[PORTFOLIO_COLUMNS[1]].map(lambda x: x + to_add)
 
-    def prepare_algorithm(self) -> Population:
+    def prepare_algorithm(self) -> StockPopulation:
         size = 100
-        genome = [StockGene(row[PORTFOLIO_COLUMNS[0]], row[PORTFOLIO_COLUMNS[0]]) for index, row in
-                  self.data.iterrows()]
+        genome = [StockGene(row[0], row[2], row[1] / 100) for index, row in self.data.iterrows()]
         selection = SUS(20)
         recombination = GroupByNeighbour()
         reproduction = Uniform()

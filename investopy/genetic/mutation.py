@@ -2,7 +2,7 @@ import logging
 import random
 from dataclasses import dataclass
 
-from definitions import Mutation, Chromosome
+from .definitions import Mutation, Chromosome
 
 
 @dataclass
@@ -60,9 +60,9 @@ class Scramble(Mutation):
 
 
 if __name__ == "__main__":
-    from investopy.algorithms.genetic.gene import StockGene
-    from investopy.algorithms.genetic.chromosome import StockChromosome
-    from investopy.algorithms.genetic.objective_function import IndexWeight
+    from investopy.genetic.gene import StockGene
+    from investopy.genetic.chromosome import StockChromosome
+    from investopy.genetic.objective_function import IndexWeight
 
     func = IndexWeight()
     sg1 = StockGene(name="sg1", price=1, amount=1, weight=0)

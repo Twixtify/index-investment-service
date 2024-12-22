@@ -1,8 +1,8 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from gene import StockGene
-from investopy.algorithms.genetic.definitions import Chromosome, T
+from investopy.genetic.definitions import Chromosome, T
+from .gene import StockGene
 
 
 @dataclass

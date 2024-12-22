@@ -3,8 +3,8 @@ import random
 from collections.abc import Sequence
 from itertools import batched
 
-from definitions import Recombination
-from investopy.algorithms.genetic.definitions import Chromosome
+from investopy.genetic.definitions import Chromosome
+from .definitions import Recombination
 
 
 class RandomPairing(Recombination):
@@ -58,9 +58,9 @@ class GroupByNeighbour(Recombination):
 
 
 if __name__ == "__main__":
-    from investopy.algorithms.genetic.gene import StockGene
-    from investopy.algorithms.genetic.chromosome import StockChromosome
-    from investopy.algorithms.genetic.objective_function import IndexWeight
+    from investopy.genetic.gene import StockGene
+    from investopy.genetic.chromosome import StockChromosome
+    from investopy.genetic.objective_function import IndexWeight
 
     func = IndexWeight()
     sg1 = StockGene(name="sg1", price=1, amount=1, weight=0)

@@ -3,11 +3,11 @@ import random
 from collections.abc import Sequence
 from copy import deepcopy
 
-from chromosome import StockChromosome
-from definitions import Population, Chromosome, Selection, Recombination, Reproduction, Mutation, Termination
-from gene import StockGene
-from investopy.algorithms.genetic.termination import Stagnation
-from objective_function import IndexWeight
+from investopy.genetic.termination import Stagnation
+from .chromosome import StockChromosome
+from .definitions import Population, Chromosome, Selection, Recombination, Reproduction, Mutation, Termination
+from .gene import StockGene
+from .objective_function import IndexWeight
 
 
 class StockPopulation(Population):
