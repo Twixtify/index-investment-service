@@ -61,7 +61,7 @@ class ApproxPortfolio(Calculator):
     _updated_weight_col = "Ny viktning (%)"
     _amount_to_buy_col = "Antal att köpa"
     _total_price_col = "Totalt pris"
-    _approximate_weight = "Approximerad viktning (%)"
+    _approximate_weight = "Köpets viktning (%)"
 
     def prepare_data(self, stocks: DataFrame, portfolio: DataFrame) -> None:
         # Remove NaN

@@ -13,7 +13,7 @@ from investopy.genetic.objective_function import IndexWeight
 from investopy.genetic.population import StockPopulation
 from investopy.genetic.recombination import RandomPairing
 from investopy.genetic.reproduction import RandomPick
-from investopy.genetic.selection import SUS
+from investopy.genetic.selection import Sort
 from investopy.genetic.termination import GenerationLimit
 from .calculator import Calculator
 
@@ -67,10 +67,10 @@ class MinPortfolio(Calculator):
     deposit: Optional[float]  # Not important
     stocks_to_exclude: Optional[list[str]] = None
     data: Optional[DataFrame] = None
-    _updated_weight_col = "Ny viktning (%)"
+    _updated_weight_col = "Ny viktning (%)"  # Weight after excluding stocks
     _amount_to_buy_col = "Antal att köpa"
     _total_price_col = "Totalt pris"
-    _approximate_weight = "Approximerad viktning (%)"
+    _approximate_weight = "Köpets viktning (%)"  # Algorithm weight
 
     def run(self):
         population = self.prepare_algorithm()
@@ -101,6 +101,27 @@ class MinPortfolio(Calculator):
             print(result.to_string(index=False))
         print("Total price:", result[self._total_price_col].sum())
         return result
+
+    def prepare_algorithm(self) -> StockPopulation:
+        ### Custom parameters ###
+        size_survivors = 20
+        ### Population parameters ###
+        size = 200
+        # Divide by 100 because weight is in %
+        genome = [StockGene(row.iloc[0], row.iloc[2], row.iloc[1] / 100) for index, row in self.data.iterrows()]
+        # Set survivor selection method
+        selection = Sort(size_survivors)
+        # Set parent combination technique
+        recombination = RandomPairing(pairings=10, pairing_size=2)
+        # Children per pair should add up to size-size_survivors
+        reproduction = RandomPick(children=int(size / size_survivors))
+        # Initialize mutation method
+        mutation = UniformStepMutation(mut_prob=0.10, step=1, min_threshold=1)
+        # Set fitness function
+        objective = IndexWeight()
+        # Set termination condition
+        termination = GenerationLimit(generation_limit=5000)
+        return StockPopulation(size, genome, selection, recombination, reproduction, mutation, objective, termination)
 
     def prepare_data(self, stocks: DataFrame, portfolio: DataFrame) -> None:
         # Remove NaN
@@ -150,24 +171,3 @@ class MinPortfolio(Calculator):
         self.data.drop(index=excluding_stocks.index, inplace=True)
         # Add average weight
         self.data[self._updated_weight_col] = self.data[PORTFOLIO_COLUMNS[1]].map(lambda x: x + to_add)
-
-    def prepare_algorithm(self) -> StockPopulation:
-        ### Custom parameters ###
-        size_survivors = 20
-        ### Population parameters ###
-        size = 200
-        # Divide by 100 because weight is in %
-        genome = [StockGene(row.iloc[0], row.iloc[2], row.iloc[1] / 100) for index, row in self.data.iterrows()]
-        # Set survivor selection method
-        selection = SUS(size_survivors)
-        # Set parent combination technique
-        recombination = RandomPairing(pairings=10, pairing_size=2)
-        # Children per pair should add up to size-size_survivors
-        reproduction = RandomPick(children=int(size / size_survivors))
-        # Initialize mutation method
-        mutation = UniformStepMutation(mut_prob=0.10, step=3, min_threshold=1)
-        # Set fitness function
-        objective = IndexWeight()
-        # Set termination condition
-        termination = GenerationLimit(generation_limit=5000)
-        return StockPopulation(size, genome, selection, recombination, reproduction, mutation, objective, termination)
