@@ -20,6 +20,8 @@ class IndexWeight(ObjectiveFunction):
     def fitness(self, chromosome: StockChromosome) -> T:
         """
         Get the fitness of this candidate solution.
+
+        # TODO: fitness should also take into account the total price, i.e. minimize the total price.
         """
         # The total price of this chromosome with stocks
         total_price = sum([gene.parameter * gene.price for gene in chromosome.genes])

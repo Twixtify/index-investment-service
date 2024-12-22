@@ -23,15 +23,17 @@ def ibindex_strategy(deposit: float) -> Portfolio:
     receiver = IBIndexOperation(calculator)
     return IBIndex(deposit, receiver)
 
+
 def min_ibindex_strategy(deposit: float) -> Portfolio:
     calculator = MinPortfolio(deposit,
                               stocks_to_exclude=['Havsfrun Investment B',
-                                                    'NAXS',
-                                                    'Traction B',
-                                                    'Öresund',
-                                                    'Karolinska Development B',
-                                                    'VEF',
-                                                    'Fastator',
-                                                    'VNV Global'])
+                                                 'NAXS',
+                                                 'Traction B',
+                                                 'Öresund',
+                                                 'Karolinska Development B',
+                                                 'VEF',
+                                                 'Fastator',
+                                                 'VNV Global']
+                              )
     receiver = IBIndexOperation(calculator)
     return IBIndex(deposit, receiver)

@@ -61,6 +61,7 @@ class ApproxPortfolio(Calculator):
     _updated_weight_col = "Ny viktning (%)"
     _amount_to_buy_col = "Antal att köpa"
     _total_price_col = "Totalt pris"
+    _approximate_weight = "Approximerad viktning (%)"
 
     def prepare_data(self, stocks: DataFrame, portfolio: DataFrame) -> None:
         # Remove NaN
@@ -112,6 +113,9 @@ class ApproxPortfolio(Calculator):
         self.data[self._amount_to_buy_col] = self.data[self._amount_to_buy_col].map(lambda x: np.rint(x))
         # Total price per stock
         self.data[self._total_price_col] = self.data[self._amount_to_buy_col] * self.data[STOCK_COLUMNS[1]]
+        # Approximate weight (amount to buy * price per stock) / total price
+        self.data[self._approximate_weight] = 100 * self.data[self._total_price_col] / self.data[
+            self._total_price_col].sum()
 
         # Extract result columns
         result = self.data[[
@@ -120,7 +124,8 @@ class ApproxPortfolio(Calculator):
             self._updated_weight_col,
             STOCK_COLUMNS[1],
             self._amount_to_buy_col,
-            self._total_price_col
+            self._total_price_col,
+            self._approximate_weight
         ]].copy()
         result[self._amount_to_buy_col] = result[self._amount_to_buy_col].astype(int)
         # Print result

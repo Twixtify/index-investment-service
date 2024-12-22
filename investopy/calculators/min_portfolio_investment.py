@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from pandas import DataFrame, to_numeric
 
-from investopy.config import PORTFOLIO_COLUMNS
+from investopy.config import PORTFOLIO_COLUMNS, STOCK_COLUMNS
 from investopy.genetic.gene import StockGene
 from investopy.genetic.mutation import UniformStepMutation
 from investopy.genetic.objective_function import IndexWeight
@@ -70,25 +70,37 @@ class MinPortfolio(Calculator):
     _updated_weight_col = "Ny viktning (%)"
     _amount_to_buy_col = "Antal att köpa"
     _total_price_col = "Totalt pris"
+    _approximate_weight = "Approximerad viktning (%)"
 
     def run(self):
         population = self.prepare_algorithm()
         result = population.evolve(gene_lower_limit=1, gene_upper_limit=10)
-        print(result[0])
-        total_price = sum([gene.parameter * gene.price for gene in result[0].genes])
-        print("Total price: ", total_price)
-        print("Weights: ",
-              [tuple([gene.name, 100 * gene.parameter * gene.price / total_price]) for gene in result[0].genes])
+        print("Best fit genes: ", result[0].genes)
+        # How much of each stock to buy
+        self.data[self._amount_to_buy_col] = [gene.parameter for gene in result[0].genes]
+        # Total price per stock
+        self.data[self._total_price_col] = self.data[self._amount_to_buy_col] * self.data[STOCK_COLUMNS[1]]
+        # Approximate weight (amount to buy * price per stock) / total price
+        self.data[self._approximate_weight] = 100 * self.data[self._total_price_col] / self.data[
+            self._total_price_col].sum()
+
         # Extract result columns
-        # result = self.data[[
-        #     PORTFOLIO_COLUMNS[0],
-        #     PORTFOLIO_COLUMNS[1],
-        #     self._updated_weight_col,
-        #     STOCK_COLUMNS[1],
-        #     self._amount_to_buy_col,
-        #     self._total_price_col
-        # ]].copy()
-        # result[self._amount_to_buy_col] = result[self._amount_to_buy_col].astype(int)
+        result = self.data[[
+            PORTFOLIO_COLUMNS[0],
+            PORTFOLIO_COLUMNS[1],
+            self._updated_weight_col,
+            STOCK_COLUMNS[1],
+            self._amount_to_buy_col,
+            self._total_price_col,
+            self._approximate_weight
+        ]].copy()
+        result[self._amount_to_buy_col] = result[self._amount_to_buy_col].astype(int)
+        with pd.option_context('display.max_rows', None,
+                               'display.max_columns', None,
+                               'display.float_format', "{:,.2f}".format):
+            print(result.to_string(index=False))
+        print("Total price:", result[self._total_price_col].sum())
+        return result
 
     def prepare_data(self, stocks: DataFrame, portfolio: DataFrame) -> None:
         # Remove NaN
@@ -153,9 +165,9 @@ class MinPortfolio(Calculator):
         # Children per pair should add up to size-size_survivors
         reproduction = RandomPick(children=int(size / size_survivors))
         # Initialize mutation method
-        mutation = UniformStepMutation(mut_prob=0.10, step=1, min_threshold=1)
+        mutation = UniformStepMutation(mut_prob=0.10, step=3, min_threshold=1)
         # Set fitness function
         objective = IndexWeight()
         # Set termination condition
-        termination = GenerationLimit(generation_limit=500)
+        termination = GenerationLimit(generation_limit=5000)
         return StockPopulation(size, genome, selection, recombination, reproduction, mutation, objective, termination)
