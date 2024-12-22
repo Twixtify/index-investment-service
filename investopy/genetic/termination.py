@@ -76,6 +76,12 @@ class GenerationLimit(Termination):
 
 @dataclass
 class TimeLimit(Termination):
+    """
+    Termination condition based on time.
+
+    The time limit is defined in seconds.
+    The start time is set when the terminate check is called the first time.
+    """
     time_limit: int
     start_time: float = None
 

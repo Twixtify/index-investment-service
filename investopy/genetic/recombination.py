@@ -16,6 +16,7 @@ class RandomPairing(Recombination):
 
     def __init__(self, pairings: int, pairing_size: int):
         """
+        Ideally pairings * pairing_size should add up to the number of survivors chosen
         :param pairings: Number of pairs to create
         :param pairing_size: Size of the pairs to create
         """
@@ -27,7 +28,7 @@ class RandomPairing(Recombination):
             logging.warning("Pairing size must be smaller or equal to the number of parents")
             return []
         pairs = []
-        for i in range(self.pairings):
+        for _ in range(self.pairings):
             pairs.append(random.sample(parents, self.pairing_size))
         return pairs
 

@@ -8,13 +8,13 @@ from pandas import DataFrame, to_numeric
 
 from investopy.config import PORTFOLIO_COLUMNS
 from investopy.genetic.gene import StockGene
-from investopy.genetic.mutation import Scramble
+from investopy.genetic.mutation import UniformStepMutation
 from investopy.genetic.objective_function import IndexWeight
 from investopy.genetic.population import StockPopulation
-from investopy.genetic.recombination import GroupByNeighbour
+from investopy.genetic.recombination import RandomPairing
 from investopy.genetic.reproduction import RandomPick
 from investopy.genetic.selection import SUS
-from investopy.genetic.termination import Stagnation
+from investopy.genetic.termination import GenerationLimit
 from .calculator import Calculator
 
 
@@ -73,8 +73,12 @@ class MinPortfolio(Calculator):
 
     def run(self):
         population = self.prepare_algorithm()
-        result = population.evolve(gene_lower_limit=1, gene_upper_limit=100)
+        result = population.evolve(gene_lower_limit=1, gene_upper_limit=10)
         print(result[0])
+        total_price = sum([gene.parameter * gene.price for gene in result[0].genes])
+        print("Total price: ", total_price)
+        print("Weights: ",
+              [tuple([gene.name, 100 * gene.parameter * gene.price / total_price]) for gene in result[0].genes])
         # Extract result columns
         # result = self.data[[
         #     PORTFOLIO_COLUMNS[0],
@@ -136,17 +140,22 @@ class MinPortfolio(Calculator):
         self.data[self._updated_weight_col] = self.data[PORTFOLIO_COLUMNS[1]].map(lambda x: x + to_add)
 
     def prepare_algorithm(self) -> StockPopulation:
-        # Custom parameters
+        ### Custom parameters ###
         size_survivors = 20
-        # Population parameters
+        ### Population parameters ###
         size = 200
         # Divide by 100 because weight is in %
         genome = [StockGene(row.iloc[0], row.iloc[2], row.iloc[1] / 100) for index, row in self.data.iterrows()]
+        # Set survivor selection method
         selection = SUS(size_survivors)
-        recombination = GroupByNeighbour()
+        # Set parent combination technique
+        recombination = RandomPairing(pairings=10, pairing_size=2)
         # Children per pair should add up to size-size_survivors
         reproduction = RandomPick(children=int(size / size_survivors))
-        mutation = Scramble(mut_prob=0.05, scramble_size=5)
+        # Initialize mutation method
+        mutation = UniformStepMutation(mut_prob=0.10, step=1, min_threshold=1)
+        # Set fitness function
         objective = IndexWeight()
-        termination = Stagnation(stagnation_threshold=0.01, stagnation_limit=5)
+        # Set termination condition
+        termination = GenerationLimit(generation_limit=500)
         return StockPopulation(size, genome, selection, recombination, reproduction, mutation, objective, termination)
