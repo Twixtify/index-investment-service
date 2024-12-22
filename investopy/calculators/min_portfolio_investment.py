@@ -2,11 +2,20 @@ from dataclasses import dataclass
 from itertools import zip_longest
 from typing import Optional
 
-from pandas import DataFrame, to_numeric
 import numpy as np
+import pandas as pd
+from pandas import DataFrame, to_numeric
 
+from investopy.config import PORTFOLIO_COLUMNS, STOCK_COLUMNS
+from investopy.genetic.gene import StockGene
+from investopy.genetic.mutation import UniformStepMutation
+from investopy.genetic.objective_function import IndexWeight
+from investopy.genetic.population import StockPopulation
+from investopy.genetic.recombination import RandomPairing
+from investopy.genetic.reproduction import RandomPick
+from investopy.genetic.selection import Sort
+from investopy.genetic.termination import GenerationLimit
 from .calculator import Calculator
-from investopy.config import PORTFOLIO_COLUMNS
 
 
 def is_match(s1: str, s2: str) -> bool:
@@ -54,8 +63,65 @@ def unify(df1: DataFrame, df2: DataFrame, on_col: str, by_left=True) -> list:
 
 
 @dataclass
-class MinPortfolioInvestment(Calculator):
+class MinPortfolio(Calculator):
+    deposit: Optional[float]  # Not important
+    stocks_to_exclude: Optional[list[str]] = None
     data: Optional[DataFrame] = None
+    _updated_weight_col = "Ny viktning (%)"  # Weight after excluding stocks
+    _amount_to_buy_col = "Antal att köpa"
+    _total_price_col = "Totalt pris"
+    _approximate_weight = "Köpets viktning (%)"  # Algorithm weight
+
+    def run(self):
+        population = self.prepare_algorithm()
+        result = population.evolve(gene_lower_limit=1, gene_upper_limit=10)
+        print("Best fit genes: ", result[0].genes)
+        # How much of each stock to buy
+        self.data[self._amount_to_buy_col] = [gene.parameter for gene in result[0].genes]
+        # Total price per stock
+        self.data[self._total_price_col] = self.data[self._amount_to_buy_col] * self.data[STOCK_COLUMNS[1]]
+        # Approximate weight (amount to buy * price per stock) / total price
+        self.data[self._approximate_weight] = 100 * self.data[self._total_price_col] / self.data[
+            self._total_price_col].sum()
+
+        # Extract result columns
+        result = self.data[[
+            PORTFOLIO_COLUMNS[0],
+            PORTFOLIO_COLUMNS[1],
+            self._updated_weight_col,
+            STOCK_COLUMNS[1],
+            self._amount_to_buy_col,
+            self._total_price_col,
+            self._approximate_weight
+        ]].copy()
+        result[self._amount_to_buy_col] = result[self._amount_to_buy_col].astype(int)
+        with pd.option_context('display.max_rows', None,
+                               'display.max_columns', None,
+                               'display.float_format', "{:,.2f}".format):
+            print(result.to_string(index=False))
+        print("Total price:", result[self._total_price_col].sum())
+        return result
+
+    def prepare_algorithm(self) -> StockPopulation:
+        ### Custom parameters ###
+        size_survivors = 20
+        ### Population parameters ###
+        size = 200
+        # Divide by 100 because weight is in %
+        genome = [StockGene(row.iloc[0], row.iloc[2], row.iloc[1] / 100) for index, row in self.data.iterrows()]
+        # Set survivor selection method
+        selection = Sort(size_survivors)
+        # Set parent combination technique
+        recombination = RandomPairing(pairings=10, pairing_size=2)
+        # Children per pair should add up to size-size_survivors
+        reproduction = RandomPick(children=int(size / size_survivors))
+        # Initialize mutation method
+        mutation = UniformStepMutation(mut_prob=0.10, step=1, min_threshold=1)
+        # Set fitness function
+        objective = IndexWeight()
+        # Set termination condition
+        termination = GenerationLimit(generation_limit=5000)
+        return StockPopulation(size, genome, selection, recombination, reproduction, mutation, objective, termination)
 
     def prepare_data(self, stocks: DataFrame, portfolio: DataFrame) -> None:
         # Remove NaN
@@ -79,12 +145,29 @@ class MinPortfolioInvestment(Calculator):
         stocks.replace(to_replace=dict(unified_column), value=None, regex=True, inplace=True)
 
         # Save result to data variable
-        self.data = portfolio.merge(stocks, how="left", on=to_merge)
+        self.data = portfolio.merge(stocks, how="left", on=to_merge[0])
         self.data = self.data.apply(to_numeric, errors='ignore')
 
-    def run(self) -> DataFrame:
-        w = self.data[PORTFOLIO_COLUMNS[1]].to_numpy().flatten() / 100
-        s = self.data["Köp"].to_numpy().flatten()
-        P = np.divide(s, w)
-        Pk = np.amax(P)
-        return self.data
+        # Remove stocks and add their average weight to remaining stocks
+        if self.stocks_to_exclude is not None:
+            self._remove_stocks_to_exclude()
+
+    def _remove_stocks_to_exclude(self):
+        # Ensure excluded stocks are removed
+        unified_name_tags = unify(self.data,
+                                  DataFrame(self.stocks_to_exclude, columns=[PORTFOLIO_COLUMNS[0]]),
+                                  PORTFOLIO_COLUMNS[0])
+        self.data.replace(to_replace=dict(unified_name_tags), value=None, regex=True, inplace=True)
+        excluding_stocks = self.data.loc[self.data[PORTFOLIO_COLUMNS[0]].isin(self.stocks_to_exclude)]
+
+        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            print("Excluding: \n", excluding_stocks.to_string(index=False))
+        excluding_arr = excluding_stocks[PORTFOLIO_COLUMNS[1]].to_numpy()
+        # Average weight to add on remaining values
+        to_add = np.sum(excluding_arr) / (len(self.data) - len(excluding_stocks))
+        print("Average weight to add from excluded stocks: ", to_add)
+
+        # Drop values from data
+        self.data.drop(index=excluding_stocks.index, inplace=True)
+        # Add average weight
+        self.data[self._updated_weight_col] = self.data[PORTFOLIO_COLUMNS[1]].map(lambda x: x + to_add)
