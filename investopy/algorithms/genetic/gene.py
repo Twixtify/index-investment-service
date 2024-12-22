@@ -8,7 +8,7 @@ class StockGene(Gene):
     name: str
     price: float
     weight: float
-    amount: int
+    amount: int = 0
 
     @property
     def parameter(self) -> int:

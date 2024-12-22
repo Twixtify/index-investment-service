@@ -1,6 +1,7 @@
 from typing import Callable
 
-from calculators.approx_portfolio import ApproxPortfolio, MinPortfolio
+from calculators.approx_portfolio import ApproxPortfolio
+from calculators.min_portfolio_investment import MinPortfolio
 from .commands import IBIndex
 from .portfolio import Portfolio
 from .portfolio_receiver import IBIndexOperation

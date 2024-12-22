@@ -35,7 +35,7 @@ class SUS(Selection):
         idx_fitness.sort(key=lambda tup: tup[1], reverse=False)
         # Total fitness
         total_fitness = sum([tup[1] for tup in idx_fitness])
-        # Normalize fitness (i.e map fitness values to the interval [0, 1])
+        # Normalize fitness (i.e. map fitness values to the interval [0, 1])
         idx_fitness[:] = [tuple([tup[0], tup[1] / total_fitness]) for tup in idx_fitness]
         # Distance between the pointers to create
         distance = 1 / self.size

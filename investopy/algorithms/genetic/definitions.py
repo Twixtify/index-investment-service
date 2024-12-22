@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
-from dataclasses import dataclass
-from typing import Protocol, TypeVar, Iterable
+from typing import TypeVar, Any
 
 T = TypeVar("T", bound=int | float)
 S = TypeVar("S", bound=int | float | str)
@@ -144,7 +143,7 @@ class Mutation(ABC):
 class ObjectiveFunction(ABC):
 
     @abstractmethod
-    def fitness(self) -> T:
+    def fitness(self, chromosome: Chromosome) -> T:
         """
         Calculate the fitness of a candidate solution or chromosome.
         """
@@ -171,16 +170,23 @@ class Termination(ABC):
         """
         raise NotImplementedError()
 
+    @property
+    @abstractmethod
+    def condition(self) -> Any:
+        """Optional condition to evaluate in the terminate method."""
+        raise NotImplementedError()
 
-@dataclass
-class Population(Protocol):
+    @condition.setter
+    def condition(self, arg: Any) -> None:
+        raise NotImplementedError()
+
+
+class Population(ABC):
     """
     General protocol of a population.
 
     Returns the fittest individual after the termination condition is met.
     """
-    gene: Gene
-    chromosome: Chromosome
     selection: Selection
     recombination: Recombination
     reproduction: Reproduction
@@ -188,7 +194,32 @@ class Population(Protocol):
     objective: ObjectiveFunction
     termination: Termination
 
-    def evolve(self) -> Iterable[Chromosome]:
+    @abstractmethod
+    def __init__(self, selection: Selection,
+                 recombination: Recombination,
+                 reproduction: Reproduction,
+                 mutation: Mutation,
+                 objective: ObjectiveFunction,
+                 termination: Termination):
+        """
+        Initialize
+        #    selection
+        #    recombination
+        #    reproduction
+        #    mutation
+        #    objective
+        #    termination
+        for this population
+        """
+        self.selection = selection
+        self.recombination = recombination
+        self.reproduction = reproduction
+        self.mutation = mutation
+        self.objective = objective
+        self.termination = termination
+
+    @abstractmethod
+    def evolve(self) -> Sequence[Chromosome]:
         """
         Main method of the Genetic Algorithm.
 
@@ -201,6 +232,7 @@ class Population(Protocol):
         """
         raise NotImplementedError()
 
-    def get_initial_population(self):
+    @abstractmethod
+    def get_initial_population(self) -> Sequence[Chromosome]:
         """Create the initial population"""
         raise NotImplementedError()

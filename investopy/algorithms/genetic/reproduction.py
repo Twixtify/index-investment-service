@@ -22,7 +22,10 @@ class RandomPick(Reproduction):
     randomly from the parents. If more than
     """
 
-    def breed(self, parents: Sequence[Chromosome], children: int) -> Sequence[Chromosome]:
+    def __init__(self, children: int):
+        self.children = children
+
+    def breed(self, parents: Sequence[Chromosome]) -> Sequence[Chromosome]:
         """
         Breed using a random pick crossover reproduction.
 
@@ -41,7 +44,7 @@ class RandomPick(Reproduction):
         :return: Children from the parents
         """
         tmp_children = []
-        for _ in range(children):
+        for _ in range(self.children):
             # Retrieve a child which is a deepcopy of the shortest genome of the parents
             child = deepcopy(min(*parents, key=lambda chromosome: len(chromosome.genes)))
             # Child does not yet have a fitness.
@@ -85,7 +88,7 @@ class Uniform(Reproduction):
         :return: two children
         """
         if len(parents) != 2 or len(parents[0].genes) != len(parents[1].genes):
-            logging.warning("There must be only two parents of equal length genome.")
+            logging.warning("There can only be two parents of equal length genome.")
             return []
         child1, child2 = deepcopy(parents[0]), deepcopy(parents[1])
         child1.fitness, child2.fitness = None, None
@@ -118,10 +121,10 @@ if __name__ == "__main__":
     individual3.fitness = func.fitness(individual3)
     individual4.fitness = func.fitness(individual4)
 
-    randpick = RandomPick()
+    randpick = RandomPick(2)
     uniform = Uniform()
 
-    offspring = randpick.breed([individual1, individual2, individual3, individual4], 2)
+    offspring = randpick.breed([individual1, individual2, individual3, individual4])
     offspring2 = uniform.breed([individual2, individual4])
 
     [print("Random Pick genome: ", child.genes) for child in offspring]

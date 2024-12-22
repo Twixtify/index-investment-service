@@ -1,7 +1,6 @@
 import logging
 import random
 from dataclasses import dataclass
-from typing import Optional
 
 from definitions import Mutation, Chromosome
 
@@ -9,8 +8,8 @@ from definitions import Mutation, Chromosome
 @dataclass
 class UniformStepMutation(Mutation):
     mut_prob: float
-    min_threshold: Optional[int] = None
-    max_threshold: Optional[int] = None
+    min_threshold: int = None
+    max_threshold: int = None
 
     def mutate(self, chromosome: Chromosome, step: int) -> None:
         """
